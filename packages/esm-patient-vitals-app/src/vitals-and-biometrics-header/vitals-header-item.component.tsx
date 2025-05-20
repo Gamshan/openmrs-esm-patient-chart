@@ -27,7 +27,7 @@ const VitalsHeaderItem: React.FC<VitalsHeaderItemProps> = ({ interpretation, val
         <div className={styles['label-container']}>
           <label className={styles.label}>{unitName}</label>
           {flaggedAbnormal ? (
-            <span className={styles[interpretation.replace('_', '-')]} title={t('abnormalValue', 'Abnormal value')} />
+            <span className={styles[interpretation.replace('_', '-')]} title={"t('abnormalValue', 'Abnormal value')"} />
           ) : null}
         </div>
         <div className={styles['value-container']}>

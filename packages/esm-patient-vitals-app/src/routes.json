@@ -12,6 +12,15 @@
       "meta": {
         "fullWidth": true
       },
+      "order": 2
+    },
+    {
+      "name": "digipaths-overview-widget",
+      "component": "digipaths",
+      "slot": "patient-chart-summary-dashboard-slot",
+      "meta": {
+        "fullWidth": false
+      },
       "order": 1
     },
     {
@@ -23,7 +32,7 @@
         "view": "vitals",
         "fullWidth": true
       },
-      "order": 1
+      "order": 6
     },
     {
       "name": "patient-vitals-info",
@@ -39,6 +48,7 @@
       },
       "order": 2
     },
+
     {
       "name": "biometrics-details-widget",
       "component": "biometricsDetailedSummary",

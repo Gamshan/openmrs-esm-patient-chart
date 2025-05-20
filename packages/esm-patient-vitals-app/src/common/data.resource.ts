@@ -10,7 +10,7 @@ import {
 import useSWRImmutable from 'swr/immutable';
 import useSWRInfinite from 'swr/infinite';
 import { type ObsRecord } from '@openmrs/esm-patient-common-lib';
-import { type KeyedMutator } from 'swr';
+import useSWR, { type KeyedMutator } from 'swr';
 import { type ConfigObject } from '../config-schema';
 import { assessValue, calculateBodyMassIndex, getReferenceRangesForConcept, interpretBloodPressure } from './helpers';
 import type { FHIRSearchBundleResponse, MappedVitals, PatientVitalsAndBiometrics, VitalsResponse } from './types';
@@ -96,6 +96,15 @@ export function useVitalsConceptMetadata() {
   };
 }
 
+export function useDigipathData() {
+  const apiUrl = `http://localhost/openmrs/ws/rest/v1/basicexample/departments`;
+
+  const { data, error, isLoading } = useSWR(apiUrl, openmrsFetch);
+
+  // @ts-ignore
+  return { data: data?.data ? [...data?.data] : [], error, isLoading };
+}
+
 export const withUnit = (label: string, unit: string | null | undefined) => {
   return `${label} ${unit ? `(${unit})` : ''}`;
 };
@@ -155,6 +164,7 @@ export function useVitalsAndBiometrics(patientUuid: string, mode: VitalsAndBiome
   // see the comments above for why this is here
   useEffect(() => {
     const index = ++vitalsHooksCounter;
+    // @ts-ignore
     vitalsHooksMutates.set(index, mutate);
     return () => {
       vitalsHooksMutates.delete(index);

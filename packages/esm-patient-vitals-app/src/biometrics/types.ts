@@ -15,3 +15,17 @@ export interface BiometricsTableHeader {
   isSortable?: boolean;
   sortFunc: (valueA: BiometricsTableRow, valueB: BiometricsTableRow) => number;
 }
+
+export interface DigipathsTableHeader {
+  key: 'dateRender' | 'actionRender' | 'dueDateRender';
+  header: string;
+  isSortable?: boolean;
+  sortFunc: (valueA: DigipathsTableRow, valueB: DigipathsTableRow) => number;
+}
+
+export interface DigipathsTableRow extends PatientVitalsAndBiometrics {
+  id: string;
+  dateRender: string;
+  actionRender: string | number;
+  dueDateRender: string | number;
+}

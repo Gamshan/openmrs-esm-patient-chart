@@ -82,7 +82,9 @@
     "*.{css,scss,ts,tsx}": "prettier --write --list-different"
   },
   "resolutions": {
-    "sass": "^1.54.3"
+    "sass": "^1.54.3",
+    "@openmrs/esm-form-engine-lib": "portal:/Users/gamshgamshan/projects/arogya/version3/openmrs-esm-form-engine-lib",
+    "@carbon/react": "1.68.0"
   },
   "packageManager": "yarn@4.5.0"
 }

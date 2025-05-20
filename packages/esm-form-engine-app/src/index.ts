@@ -1,5 +1,6 @@
 import { defineConfigSchema, getAsyncLifecycle } from '@openmrs/esm-framework';
 import { configSchema } from './config-schema';
+// import './index.scss';
 
 const moduleName = '@openmrs/esm-form-engine-app';
 
