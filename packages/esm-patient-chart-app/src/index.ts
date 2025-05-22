@@ -3,7 +3,6 @@ import {
   defineExtensionConfigSchema,
   getAsyncLifecycle,
   getSyncLifecycle,
-  registerFeatureFlag,
 } from '@openmrs/esm-framework';
 import * as PatientCommonLib from '@openmrs/esm-patient-common-lib';
 import { createDashboardLink } from '@openmrs/esm-patient-common-lib';
@@ -12,13 +11,11 @@ import genericDashboardComponent, { genericDashboardConfigSchema } from './side-
 import genericNavGroupComponent, { genericNavGroupConfigSchema } from './side-nav/generic-nav-group.component';
 import { moduleName } from './constants';
 import { setupCacheableRoutes, setupOfflineVisitsSync } from './offline';
-import { encountersDashboardMeta, summaryDashboardMeta } from './dashboard.meta';
-import addPastVisitActionButtonComponent from './actions-buttons/add-past-visit.component';
-import cancelVisitActionButtonComponent from './actions-buttons/cancel-visit.component';
+import { summaryDashboardMeta, encountersDashboardMeta } from './dashboard.meta';
+import deleteVisitActionButtonComponent from './actions-buttons/delete-visit.component';
 import currentVisitSummaryComponent from './visit/visits-widget/current-visit-summary.component';
 import markPatientAliveActionButtonComponent from './actions-buttons/mark-patient-alive.component';
 import markPatientDeceasedActionButtonComponent from './actions-buttons/mark-patient-deceased.component';
-import pastVisitsDetailOverviewComponent from './visit/past-visit-overview.component';
 import pastVisitsOverviewComponent from './visit/visits-widget/visit-detail-overview.component';
 import patientChartPageComponent from './root.component';
 import patientDetailsTileComponent from './patient-details-tile/patient-details-tile.component';
@@ -40,12 +37,6 @@ export function startupApp() {
   defineConfigSchema(moduleName, esmPatientChartSchema);
   defineExtensionConfigSchema('nav-group', genericNavGroupConfigSchema);
   defineExtensionConfigSchema('dashboard', genericDashboardConfigSchema);
-
-  registerFeatureFlag(
-    'rde',
-    'Retrospective Data Entry',
-    "Features to enter data for past visits. Includes the 'Edit Past Visit' button in the start visit dialog, and the 'Add Past Visit' button in the patient header.",
-  );
 }
 
 export const root = getSyncLifecycle(patientChartPageComponent, { featureName: 'patient-chart', moduleName });
@@ -83,13 +74,8 @@ export const stopVisitActionButton = getSyncLifecycle(stopVisitActionButtonCompo
   moduleName,
 });
 
-export const cancelVisitActionButton = getSyncLifecycle(cancelVisitActionButtonComponent, {
+export const deleteVisitActionMenuButton = getSyncLifecycle(deleteVisitActionButtonComponent, {
   featureName: 'patient-actions-slot',
-  moduleName,
-});
-
-export const addPastVisitActionButton = getSyncLifecycle(addPastVisitActionButtonComponent, {
-  featureName: 'patient-actions-slot-add-past-visit-button',
   moduleName,
 });
 
@@ -103,15 +89,10 @@ export const stopVisitPatientSearchActionButton = getSyncLifecycle(stopVisitActi
   moduleName,
 });
 
-export const cancelVisitPatientSearchActionButton = getSyncLifecycle(cancelVisitActionButtonComponent, {
-  featureName: 'patient-actions-slot-cancel-visit-button',
-  moduleName,
-});
-
-export const addPastVisitPatientSearchActionButton = getSyncLifecycle(addPastVisitActionButtonComponent, {
-  featureName: 'patient-search-actions-slot-add-past-visit-button',
-  moduleName,
-});
+export const clinicalViewsSummary = getAsyncLifecycle(
+  () => import('./clinical-views/encounter-tile/clinical-views-summary.component'),
+  { featureName: 'clinical-views-summary', moduleName },
+);
 
 export const encountersSummaryDashboardLink =
   // t('Visits', 'Visits')
@@ -125,11 +106,6 @@ export const encountersSummaryDashboardLink =
 
 export const currentVisitSummary = getSyncLifecycle(currentVisitSummaryComponent, {
   featureName: 'current-visit-summary',
-  moduleName,
-});
-
-export const pastVisitsOverview = getSyncLifecycle(pastVisitsDetailOverviewComponent, {
-  featureName: 'past-visits-overview',
   moduleName,
 });
 
@@ -172,11 +148,6 @@ export const markPatientDeceasedForm = getAsyncLifecycle(
     moduleName,
   },
 );
-
-export const cancelVisitModal = getAsyncLifecycle(() => import('./visit/visit-prompt/cancel-visit-dialog.component'), {
-  featureName: 'cancel visit',
-  moduleName,
-});
 
 export const startVisitModal = getAsyncLifecycle(() => import('./visit/visit-prompt/start-visit-dialog.component'), {
   featureName: 'start visit',
@@ -227,6 +198,16 @@ export const activeVisitActionsComponent = getAsyncLifecycle(
 );
 
 export const encounterListTableTabs = getAsyncLifecycle(
-  () => import('./encounter-list/components/encounter-list-tabs.component'),
+  () => import('./clinical-views/encounter-list/encounter-list-tabs.component'),
   { featureName: 'encounter-list-table-tabs', moduleName },
+);
+
+export const visitContextSwitcherModal = getAsyncLifecycle(
+  () => import('./visit/visits-widget/visit-context/visit-context-switcher.modal'),
+  { featureName: 'visit-context-switcher', moduleName },
+);
+
+export const visitContextHeader = getAsyncLifecycle(
+  () => import('./visit/visits-widget/visit-context/visit-context-header.component'),
+  { featureName: 'visit-context-header', moduleName },
 );

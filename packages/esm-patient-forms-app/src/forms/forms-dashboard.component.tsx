@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tile } from '@carbon/react';
-import { ResponsiveWrapper, useConfig, useConnectivity, usePatient } from '@openmrs/esm-framework';
+import { ResponsiveWrapper, useConfig, useConnectivity } from '@openmrs/esm-framework';
 import {
   type DefaultPatientWorkspaceProps,
   EmptyDataIllustration,
@@ -10,6 +10,7 @@ import {
 } from '@openmrs/esm-patient-common-lib';
 import type { ConfigObject } from '../config-schema';
 import { useForms } from '../hooks/use-forms';
+import { mapFormsToHtmlFormEntryForms } from '../form-entry-interop';
 import FormsList from './forms-list.component';
 import styles from './forms-dashboard.scss';
 
@@ -28,16 +29,23 @@ const FormsDashboard: React.FC<FormsDashboardProps> = ({
   const { t } = useTranslation();
   const config = useConfig<ConfigObject>();
   const isOnline = useConnectivity();
-  const htmlFormEntryForms = config.htmlFormEntryForms;
-  const { patientUuid: fetchedPatientUuid } = usePatient(patientUuid);
-  const { data: forms, error, mutateForms } = useForms(patientUuid, undefined, undefined, !isOnline, config.orderBy);
   const { currentVisit } = useVisitOrOfflineVisit(patientUuid);
+  const {
+    data: forms,
+    allForms,
+    error,
+    mutateForms,
+  } = useForms(patientUuid, currentVisit?.uuid, undefined, undefined, !isOnline, config.orderBy);
+
+  const htmlFormEntryForms = useMemo(() => {
+    return mapFormsToHtmlFormEntryForms(allForms, config.htmlFormEntryForms);
+  }, [config.htmlFormEntryForms, allForms]);
 
   const handleFormOpen = useCallback(
     (formUuid: string, encounterUuid: string, formName: string) => {
       launchFormEntryOrHtmlForms(
         htmlFormEntryForms,
-        fetchedPatientUuid,
+        patientUuid,
         formUuid,
         currentVisit?.uuid,
         encounterUuid,
@@ -55,7 +63,7 @@ const FormsDashboard: React.FC<FormsDashboardProps> = ({
       currentVisit,
       htmlFormEntryForms,
       mutateForms,
-      fetchedPatientUuid,
+      patientUuid,
       clinicalFormsWorkspaceName,
       formEntryWorkspaceName,
       htmlFormEntryWorkspaceName,

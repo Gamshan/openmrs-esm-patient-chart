@@ -123,7 +123,7 @@ const ConditionsOverview: React.FC<ConditionsOverviewProps> = ({ patientUuid }) 
         condition: condition.display,
         abatementDateTime: condition.abatementDateTime,
         onsetDateTimeRender: condition.onsetDateTime
-          ? formatDate(parseDate(condition.onsetDateTime), { time: false, day: false })
+          ? formatDate(parseDate(condition.onsetDateTime), { mode: 'wide', time: 'for today' })
           : '--',
         status: condition.clinicalStatus,
       };
@@ -194,7 +194,7 @@ const ConditionsOverview: React.FC<ConditionsOverviewProps> = ({ patientUuid }) 
                           {header.header?.content ?? header.header}
                         </TableHeader>
                       ))}
-                      <TableHeader />
+                      <TableHeader aria-label={t('actions', 'Actions')} />
                     </TableRow>
                   </TableHead>
                   <TableBody>

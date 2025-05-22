@@ -143,11 +143,12 @@ const MedicationsDetailsTable: React.FC<MedicationsDetailsTableProps> = ({
                 <span className={styles.label01}>{t('indication', 'Indication').toUpperCase()}</span>{' '}
                 {medication.orderReasonNonCoded}
               </span>
-            )}
+            )}{' '}
+            {medication.orderReasonNonCoded && medication.quantity && <>&mdash;</>}
             {medication.quantity && (
               <span>
-                <span className={styles.label01}> &mdash; {t('quantity', 'Quantity').toUpperCase()}</span>{' '}
-                {medication.quantity} {medication?.quantityUnits?.display}
+                <span className={styles.label01}> {t('quantity', 'Quantity').toUpperCase()}</span> {medication.quantity}{' '}
+                {medication?.quantityUnits?.display}
               </span>
             )}
           </p>
@@ -245,7 +246,7 @@ const MedicationsDetailsTable: React.FC<MedicationsDetailsTableProps> = ({
               {t('print', 'Print')}
             </Button>
           )}
-          {showAddButton ?? true ? (
+          {(showAddButton ?? true) ? (
             <Button
               kind="ghost"
               renderIcon={(props: ComponentProps<typeof AddIcon>) => <AddIcon size={16} {...props} />}
@@ -284,7 +285,7 @@ const MedicationsDetailsTable: React.FC<MedicationsDetailsTableProps> = ({
                         {header.header}
                       </TableHeader>
                     ))}
-                    <TableHeader />
+                    <TableHeader aria-label={t('actions', 'Actions')} />
                   </TableRow>
                 </TableHead>
                 <TableBody>

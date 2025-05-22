@@ -4,8 +4,7 @@ import { Button, ContentSwitcher, DataTableSkeleton, IconSwitch, InlineLoading }
 import { Add, Analytics, Table } from '@carbon/react/icons';
 import { formatDatetime, parseDate, useConfig, useLayoutType } from '@openmrs/esm-framework';
 import { CardHeader, EmptyState, ErrorState, useVisitOrOfflineVisit } from '@openmrs/esm-patient-common-lib';
-import { launchVitalsAndBiometricsForm } from '../utils';
-import { useVitalsConceptMetadata, useVitalsAndBiometrics, withUnit } from '../common';
+
 import { type ConfigObject } from '../config-schema';
 import BiometricsChart from './biometrics-chart.component';
 import PaginatedBiometrics from './paginated-biometrics.component';
@@ -23,7 +22,7 @@ interface DigiPathBaseProps {
 
 const DigipathsBase: React.FC<DigiPathBaseProps> = ({ patientUuid, pageSize, urlLabel, pageUrl }) => {
   const { t } = useTranslation();
-  const displayText = t('biometrics_lower', 'biometrics');
+  const displayText = t('digipaths_lower', 'digipaths');
   const headerTitle = t('digipaths', 'Digipaths');
   const [chartView, setChartView] = useState(false);
   const isTablet = useLayoutType() === 'tablet';
@@ -31,33 +30,28 @@ const DigipathsBase: React.FC<DigiPathBaseProps> = ({ patientUuid, pageSize, url
   const config = useConfig<ConfigObject>();
   const { bmiUnit } = config.biometrics;
   // const { data: biometrics, isValidating } = useVitalsAndBiometrics(patientUuid, 'biometrics');
-  const { data: conceptUnits } = useVitalsConceptMetadata();
   const { currentVisit } = useVisitOrOfflineVisit(patientUuid);
 
-  const launchBiometricsForm = useCallback(
-    () => launchVitalsAndBiometricsForm(currentVisit, config),
-    [config, currentVisit],
-  );
-  const { isLoading, data: digipathData, error } = useDigipathData();
+  const { isLoading, data: digipathData, error } = useDigipathData(patientUuid);
 
   const tableHeaders: Array<DigipathsTableHeader> = [
     {
       key: 'dateRender',
       header: t('dateAndTime', 'Date and time'),
       isSortable: true,
-      sortFunc: (valueA, valueB) => new Date(valueA.date).getTime() - new Date(valueB.date).getTime(),
+      sortFunc: (valueA, valueB) => new Date(valueA.dateRender).getTime() - new Date(valueB.dateRender).getTime(),
+    },
+    {
+      key: 'titleRender',
+      header: t('title', 'Title'),
+      isSortable: true,
+      sortFunc: (valueA, valueB) => (valueA.height && valueB.height ? valueA.height - valueB.height : 0),
     },
     {
       key: 'actionRender',
       header: t('action', 'Action'),
       isSortable: true,
       sortFunc: (valueA, valueB) => (valueA.weight && valueB.weight ? valueA.weight - valueB.weight : 0),
-    },
-    {
-      key: 'dueDateRender',
-      header: t('dueDate', 'Due Date'),
-      isSortable: true,
-      sortFunc: (valueA, valueB) => (valueA.height && valueB.height ? valueA.height - valueB.height : 0),
     },
   ];
 
@@ -68,8 +62,8 @@ const DigipathsBase: React.FC<DigiPathBaseProps> = ({ patientUuid, pageSize, url
           ...digipath,
           id: `${index}`,
           dateRender: digipath.date ? formatDatetime(parseDate(digipath.date.toString()), { mode: 'wide' }) : '--',
+          titleRender: digipath.title,
           actionRender: digipath.description,
-          dueDateRender: digipath.date ? formatDatetime(parseDate(digipath.date.toString()), { mode: 'wide' }) : '--',
         };
       }),
     [digipathData],
@@ -116,7 +110,7 @@ const DigipathsBase: React.FC<DigiPathBaseProps> = ({ patientUuid, pageSize, url
       </div>
     );
   }
-  return <EmptyState displayText={displayText} headerTitle={headerTitle} launchForm={launchBiometricsForm} />;
+  return <EmptyState displayText={displayText} headerTitle={headerTitle} />;
 };
 
 export default DigipathsBase;

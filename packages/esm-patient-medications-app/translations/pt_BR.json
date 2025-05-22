@@ -1,4 +1,5 @@
 {
+  "actions": "Actions",
   "activeMedicationsDisplayText": "Medicamentos ativos",
   "activeMedicationsHeaderTitle": "medicamentos ativos",
   "activeMedicationsTableTitle": "Medicamentos ativos",
@@ -45,7 +46,6 @@
   "medicationIndefiniteDuration": "Duração indefinida",
   "Medications": "Medicamentos",
   "modify": "Modificar",
-  "none": "Nenhum",
   "noResultsForDrugSearch": "Nenhum resultado a ser exibido para \"{{searchTerm}}\"",
   "numRefillsErrorMessage": "É necessário o número de recargas",
   "onDate": "em",
