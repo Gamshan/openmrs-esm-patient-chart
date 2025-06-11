@@ -1,0 +1,4 @@
+{
+  ".{js,jsx}": "yarn lint:fix",
+  ".{js,jsx,json,css,md}": "yarn prettier:fix"
+}
