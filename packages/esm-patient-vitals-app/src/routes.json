@@ -14,15 +14,7 @@
       },
       "order": 2
     },
-    {
-      "name": "digipaths-overview-widget",
-      "component": "digipaths",
-      "slot": "patient-chart-summary-dashboard-slot",
-      "meta": {
-        "fullWidth": false
-      },
-      "order": 1
-    },
+
     {
       "name": "vitals-details-widget",
       "component": "vitalsMain",
