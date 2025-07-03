@@ -289,7 +289,7 @@ const VitalsAndBiometricsForm: React.FC<VitalsAndBiometricsFormProps> = ({
         </div>
         <ButtonSet className={isTablet ? styles.tablet : styles.desktop}>
           <ButtonSkeleton className={styles.button} />
-          <ButtonSkeleton className={styles.button} type="submit" />
+          <ButtonSkeleton className={styles.button} />
         </ButtonSet>
       </Form>
     );
@@ -588,14 +588,14 @@ const VitalsAndBiometricsForm: React.FC<VitalsAndBiometricsFormProps> = ({
             className={styles.errorNotification}
             lowContrast={false}
             onClose={() => setHasInvalidVitals(false)}
-            title={t('vitalsAndBiometricsSaveError', 'Error saving vitals and biometrics')}
+            title={t('vitalsAndBiometricsSaveError', 'Error saving Vitals and Biometrics')}
             subtitle={t('checkForValidity', 'Some of the values entered are invalid')}
           />
         </Column>
       )}
 
       <ButtonSet className={isTablet ? styles.tablet : styles.desktop}>
-        <Button className={styles.button} kind="secondary" onClick={closeWorkspace}>
+        <Button className={styles.button} kind="secondary" onClick={() => closeWorkspace()}>
           {t('discard', 'Discard')}
         </Button>
         <Button

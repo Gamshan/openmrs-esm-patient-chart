@@ -7,20 +7,3 @@
     border-bottom: none !important;
   }
 }
-
-.expandedCard {
-  background-color: #f4f4f4;
-  padding: 1rem;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  line-height: 1.5;
-
-  .expandedItem {
-    margin-bottom: 0.75rem;
-
-    strong {
-      display: block;
-      margin-bottom: 0.25rem;
-    }
-  }
-}

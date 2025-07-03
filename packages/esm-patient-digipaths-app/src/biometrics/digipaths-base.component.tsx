@@ -6,7 +6,7 @@ import { CardHeader, EmptyState, ErrorState, useVisitOrOfflineVisit } from '@ope
 
 import { type ConfigObject } from '../config-schema';
 import PaginatedDigipaths from './paginated-digipaths.component';
-import type { DigipathsTableHeader, DigipathsTableRow, DigipathsExpandedTableRow } from './types';
+import type { DigipathsTableHeader, DigipathsTableRow } from './types';
 import styles from './digipaths-base.scss';
 import { useDigipathData } from '../common/data.resource';
 
@@ -66,16 +66,6 @@ const DigipathsBase: React.FC<DigiPathBaseProps> = ({ patientUuid, pageSize, url
     [digipathData],
   );
 
-  const expandedTableRows: Array<DigipathsExpandedTableRow> = useMemo(
-    () =>
-      digipathData?.map((digipath, index) => ({
-        ...digipath,
-        id: `${index}`,
-        descriptionRender: digipath.details || 'No description available',
-      })),
-    [digipathData],
-  );
-
   if (isLoading) return <DataTableSkeleton role="progressbar" />;
   if (error) return <ErrorState error={error} headerTitle={headerTitle} />;
   if (digipathData?.length) {
@@ -113,7 +103,6 @@ const DigipathsBase: React.FC<DigiPathBaseProps> = ({ patientUuid, pageSize, url
           urlLabel={urlLabel}
           pageUrl={pageUrl}
           tableHeaders={tableHeaders}
-          expandedTableRows={expandedTableRows}
         />
       </div>
     );

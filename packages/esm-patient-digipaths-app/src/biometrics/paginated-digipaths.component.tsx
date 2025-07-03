@@ -1,39 +1,35 @@
 import React, { useMemo, useState } from 'react';
 import {
   DataTable,
+  type DataTableRow,
   Table,
-  TableBody,
   TableCell,
   TableContainer,
-  TableExpandedRow,
-  TableExpandHeader,
-  TableExpandRow,
+  TableBody,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow, type DataTableSortState,
 } from '@carbon/react';
 import { useLayoutType, usePagination } from '@openmrs/esm-framework';
 import { PatientChartPagination } from '@openmrs/esm-patient-common-lib';
 import styles from './paginated-digipaths.scss';
-import type { DigipathsTableHeader, DigipathsTableRow, DigipathsExpandedTableRow } from './types';
+import type { DigipathsTableHeader, DigipathsTableRow } from './types';
 
 interface PaginatedDigipathsProps {
-  tableRows: DigipathsTableRow[];
-  expandedTableRows: DigipathsExpandedTableRow[];
+  tableRows: Array<DigipathsTableRow>;
   pageSize: number;
   pageUrl: string;
   urlLabel: string;
-  tableHeaders: DigipathsTableHeader[];
+  tableHeaders: Array<DigipathsTableHeader>;
 }
 
 const PaginatedDigipaths: React.FC<PaginatedDigipathsProps> = ({
-                                                                 tableRows,
-                                                                 expandedTableRows,
-                                                                 pageSize,
-                                                                 pageUrl,
-                                                                 urlLabel,
-                                                                 tableHeaders,
-                                                               }) => {
+  tableRows,
+  pageSize,
+  pageUrl,
+  urlLabel,
+  tableHeaders,
+}) => {
   const isTablet = useLayoutType() === 'tablet';
 
   const [sortParams, setSortParams] = useState<{ key: string; sortDirection: 'ASC' | 'DESC' | 'NONE' }>({
@@ -41,77 +37,85 @@ const PaginatedDigipaths: React.FC<PaginatedDigipathsProps> = ({
     sortDirection: 'NONE',
   });
 
-  const handleSorting = (_a, _b, { key, sortDirection }) => {
-    setSortParams({ key: sortDirection === 'NONE' ? '' : key, sortDirection });
+  const handleSorting = (
+    cellA: any,
+    cellB: any,
+    { key, sortDirection }: { key: string; sortDirection: DataTableSortState },
+  ) => {
+    if (sortDirection === 'NONE') {
+      setSortParams({ key: '', sortDirection });
+    } else {
+      setSortParams({ key, sortDirection });
+    }
+    return 0;
   };
 
-  const sortedData = useMemo(() => {
-    if (sortParams.sortDirection === 'NONE') return tableRows;
-    const header = tableHeaders.find((h) => h.key === sortParams.key);
-    if (!header) return tableRows;
-    return [...tableRows].sort((a, b) =>
-      sortParams.sortDirection === 'DESC' ? header.sortFunc(a, b) : -header.sortFunc(a, b),
-    );
-  }, [sortParams, tableRows, tableHeaders]);
 
-  const { results: paginatedRows, goTo, currentPage } = usePagination(sortedData, pageSize);
+  const sortedData: Array<DigipathsTableRow> = useMemo(() => {
+    if (sortParams.sortDirection === 'NONE') {
+      return tableRows;
+    }
 
-  const getExpandedContent = (rowId: string) => {
-    const matched = expandedTableRows.find(row => row.id === rowId);
-    return matched?.descriptionRender || 'No additional details available';
-  };
+    const header = tableHeaders.find((header) => header.key === sortParams.key);
+
+    if (!header) {
+      return tableRows;
+    }
+
+    const sortedRows = tableRows.slice().sort((rowA, rowB) => {
+      const sortingNum = header.sortFunc(rowA, rowB);
+      return sortParams.sortDirection === 'DESC' ? sortingNum : -sortingNum;
+    });
+
+    return sortedRows;
+  }, [tableRows, tableHeaders, sortParams]);
+
+  const { results: paginatedBiometrics, goTo, currentPage } = usePagination(sortedData, pageSize);
 
   return (
     <>
       <DataTable
-        rows={paginatedRows}
         headers={tableHeaders}
-        size={isTablet ? 'lg' : 'sm'}
-        useZebraStyles
-        sortRow={handleSorting}
         isSortable
+        overflowMenuOnHover={!isTablet}
+        rows={paginatedBiometrics}
+        size={isTablet ? 'lg' : 'sm'}
+        sortRow={handleSorting}
+        useZebraStyles
       >
-        {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
+        {({ rows, headers, getHeaderProps, getTableProps }) => (
           <TableContainer className={styles.tableContainer}>
-            <Table {...getTableProps()} className={styles.table}>
+            <Table aria-label="Digipaths" className={styles.table} {...getTableProps()}>
               <TableHead>
                 <TableRow>
-                  <TableExpandHeader />
-                  {headers.map(header => (
-                    <TableHeader key={header.key} {...getHeaderProps({ header, isSortable: header.isSortable })}>
-                      {header.header?.content ?? header.header}
+                  {headers.map((header) => (
+                    <TableHeader
+                      {...getHeaderProps({
+                        header,
+                      })}
+                    >
+                      {header.header}
                     </TableHeader>
                   ))}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map(row => (
-                  <React.Fragment key={row.id}>
-                    <TableExpandRow {...getRowProps({ row })}>
-                      {row.cells.map(cell => (
-                        <TableCell key={cell.id}>{cell.value?.content ?? cell.value}</TableCell>
-                      ))}
-                    </TableExpandRow>
-                    <TableExpandedRow colSpan={headers.length + 1}>
-                      <div className={styles.expandedCard}>
-                        <div className="expandedItem">
-                          <strong>Description:</strong>
-                          <div>{getExpandedContent(row.id)}</div>
-                        </div>
-                      </div>
-                    </TableExpandedRow>
-                  </React.Fragment>
+                {rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.cells.map((cell) => (
+                      <TableCell key={cell.id}>{cell.value?.content ?? cell.value}</TableCell>
+                    ))}
+                  </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
         )}
       </DataTable>
-
       <PatientChartPagination
         pageNumber={currentPage}
         totalItems={tableRows.length}
-        currentItems={paginatedRows.length}
+        currentItems={paginatedBiometrics.length}
         pageSize={pageSize}
         onPageNumberChange={({ page }) => goTo(page)}
         dashboardLinkUrl={pageUrl}

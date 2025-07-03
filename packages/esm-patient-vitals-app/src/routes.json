@@ -12,9 +12,8 @@
       "meta": {
         "fullWidth": true
       },
-      "order": 2
+      "order": 1
     },
-
     {
       "name": "vitals-details-widget",
       "component": "vitalsMain",
@@ -24,7 +23,7 @@
         "view": "vitals",
         "fullWidth": true
       },
-      "order": 6
+      "order": 1
     },
     {
       "name": "patient-vitals-info",
@@ -40,7 +39,6 @@
       },
       "order": 2
     },
-
     {
       "name": "biometrics-details-widget",
       "component": "biometricsDetailedSummary",

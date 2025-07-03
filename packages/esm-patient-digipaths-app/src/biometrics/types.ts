@@ -13,8 +13,3 @@ export interface DigipathsTableRow extends Digipaths {
   actionRender: string | number;
   titleRender: string;
 }
-
-export interface DigipathsExpandedTableRow extends Digipaths {
-  id: string;
-  descriptionRender: string;
-}

@@ -83,12 +83,12 @@
   background: white;
 
   :global(
-    .cds--chart-holder
-      .cds--cc--toolbar
-      .cds--overflow-menu-options
-      .cds--overflow-menu-options__option
-      .cds--overflow-menu-options__btn
-  ) {
+      .cds--chart-holder
+        .cds--cc--toolbar
+        .cds--overflow-menu-options
+        .cds--overflow-menu-options__option
+        .cds--overflow-menu-options__btn
+    ) {
     max-width: none !important;
   }
 }

@@ -60,9 +60,9 @@ const GeneralOrderTable: React.FC<GeneralOrderProps> = ({ order }) => {
         result: isLoadingResult ? (
           <SkeletonText />
         ) : (
-          (getObservationDisplayValue(
+          getObservationDisplayValue(
             obs?.groupMembers?.find((obs) => obs.concept.uuid === memberConcept.uuid)?.value,
-          ) ?? '--')
+          ) ?? '--'
         ),
         normalRange:
           memberConcept.hiNormal && memberConcept.lowNormal
@@ -76,7 +76,7 @@ const GeneralOrderTable: React.FC<GeneralOrderProps> = ({ order }) => {
           id: concept.uuid,
           orderName: <div className={styles.type}>{concept.display}</div>,
           instructions: order?.instructions ?? '--',
-          result: isLoadingResult ? <SkeletonText /> : (getObservationDisplayValue(obs?.value) ?? '--'),
+          result: isLoadingResult ? <SkeletonText /> : getObservationDisplayValue(obs?.value) ?? '--',
           normalRange: concept.hiNormal && concept.lowNormal ? `${concept.lowNormal} - ${concept.hiNormal}` : 'N/A',
           referenceNumber: order?.accessionNumber,
         },

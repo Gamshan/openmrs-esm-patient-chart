@@ -45,7 +45,7 @@ export function useFormEncounters(cachedOfflineFormsOnly = false, patientUuid: s
     // show published forms and hide component forms
     const forms = hasCustomFormsUrl
       ? res?.data.results
-      : (res.data?.results?.filter((form) => form.published && !/component/i.test(form.name)) ?? []);
+      : res.data?.results?.filter((form) => form.published && !/component/i.test(form.name)) ?? [];
 
     if (!cachedOfflineFormsOnly) {
       return forms;
