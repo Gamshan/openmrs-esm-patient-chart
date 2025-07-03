@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.1",
+    "cheerio": "1.0.0-rc.12",
     "classnames": "^2.3.2",
     "react-barcode": "^1.5.3",
     "react-hook-form": "^7.46.2",
@@ -83,7 +84,7 @@
   },
   "resolutions": {
     "sass": "^1.54.3",
-    "@openmrs/esm-form-engine-lib": "portal:/Users/gamshgamshan/projects/arogya/version3/openmrs-esm-form-engine-lib",
+    "@openmrs/esm-form-engine-lib": "portal:/D:/Arogya/openmrs-esm-form-engine-lib",
     "@carbon/react": "1.68.0"
   },
   "packageManager": "yarn@4.9.1"
