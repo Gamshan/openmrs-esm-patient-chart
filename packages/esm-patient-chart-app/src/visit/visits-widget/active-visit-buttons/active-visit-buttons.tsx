@@ -27,7 +27,7 @@ const ActiveVisitActions: React.FC<ActiveVisitActionsInterface> = ({ visit, pati
   const launchOrderBasketFormWorkspace = useLaunchWorkspaceRequiringVisit('order-basket');
   const launchVisitNotesFormWorkspace = useLaunchWorkspaceRequiringVisit('visit-notes-form-workspace');
   const launchVitalsAndBiometricsFormWorkspace = useLaunchWorkspaceRequiringVisit(
-    'patient-vitals-biometrics-form-workspace',
+    'patient-vitals-digipath-form-workspace',
   );
 
   return (

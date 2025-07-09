@@ -37,7 +37,7 @@ mockUseConfig.mockReturnValue({
 } as ConfigObject);
 
 describe('Biometrics Overview', () => {
-  it('renders an empty state view if biometrics data is unavailable', async () => {
+  it('renders an empty state view if digipath data is unavailable', async () => {
     mockUseVitalsAndBiometrics.mockReturnValue({
       data: [],
     } as ReturnType<typeof useVitalsAndBiometrics>);
@@ -52,7 +52,7 @@ describe('Biometrics Overview', () => {
     expect(screen.getByText(/Record biometrics/i)).toBeInTheDocument();
   });
 
-  it('renders an error state view if there is a problem fetching biometrics data', async () => {
+  it('renders an error state view if there is a problem fetching digipath data', async () => {
     const mockError = {
       message: '401 Unauthorized',
       response: {
@@ -79,7 +79,7 @@ describe('Biometrics Overview', () => {
     ).toBeInTheDocument();
   });
 
-  it("renders a tabular overview of the patient's biometrics data when available", async () => {
+  it("renders a tabular overview of the patient's digipath data when available", async () => {
     const user = userEvent.setup();
 
     mockUseVitalsAndBiometrics.mockReturnValue({

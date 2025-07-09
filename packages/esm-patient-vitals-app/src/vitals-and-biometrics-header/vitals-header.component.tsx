@@ -101,7 +101,7 @@ const VitalsHeader: React.FC<VitalsHeaderProps> = ({ patientUuid, hideLinks = fa
       <div className={styles.container}>
         <div className={styles.vitalsHeader} role="button" tabIndex={0} onClick={toggleDetailsPanel}>
           <div className={styles.headerItems}>
-            <span className={styles.heading}>{t('vitalsAndBiometrics', 'Vitals and biometrics')}</span>
+            <span className={styles.heading}>{t('vitalsAndBiometrics', 'Vitals and digipath')}</span>
             <span className={styles.bodyText}>
               {formatDate(parseDate(latestVitals?.date), { day: true, time: true })}
             </span>
@@ -227,7 +227,7 @@ const VitalsHeader: React.FC<VitalsHeaderProps> = ({ patientUuid, hideLinks = fa
   return (
     <div className={styles.emptyStateVitalsHeader}>
       <div className={styles.container}>
-        <span className={styles.heading}>{t('vitalsAndBiometrics', 'Vitals and biometrics')}</span>
+        <span className={styles.heading}>{t('vitalsAndBiometrics', 'Vitals and digipath')}</span>
         <span className={styles.bodyText}>{t('noDataRecorded', 'No data has been recorded for this patient')}</span>
       </div>
 

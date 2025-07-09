@@ -24,7 +24,7 @@ export const VitalsAndBiometricsActionMenu = ({ encounterUuid }: VitalsAndBiomet
   }, [encounterUuid, t]);
 
   const handleLaunchDeleteVitalsAndBiometricsModal = useCallback(() => {
-    const dispose = showModal('vitals-biometrics-delete-confirmation-modal', {
+    const dispose = showModal('vitals-digipath-delete-confirmation-modal', {
       closeDeleteModal: () => dispose(),
       encounterUuid,
       patientUuid,

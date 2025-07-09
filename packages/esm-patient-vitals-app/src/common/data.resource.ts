@@ -185,7 +185,7 @@ let vitalsHooksCounter = 0;
 const vitalsHooksMutates = new Map<number, ReturnType<typeof useSWRInfinite<VitalsFetchResponse>>['mutate']>();
 
 /**
- * Hook to get concepts for vitals, biometrics or both
+ * Hook to get concepts for vitals, digipath or both
  */
 export function useVitalsOrBiometricsConcepts(mode: VitalsAndBiometricsMode) {
   const { concepts } = useConfig<ConfigObject>();
@@ -215,10 +215,10 @@ export function useVitalsOrBiometricsConcepts(mode: VitalsAndBiometricsMode) {
 }
 
 /**
- * Hook to get the vitals and / or biometrics for a patient
+ * Hook to get the vitals and / or digipath for a patient
  *
  * @param patientUuid The uuid of the patient to get the vitals for
- * @param mode Either 'vitals', to load only vitals, 'biometrics', to load only biometrics or 'both' to load both
+ * @param mode Either 'vitals', to load only vitals, 'digipath', to load only digipath or 'both' to load both
  * @returns An SWR-like structure that includes the cleaned-up vitals
  */
 export function useVitalsAndBiometrics(patientUuid: string, mode: VitalsAndBiometricsMode = 'vitals') {
@@ -375,7 +375,7 @@ export function useVitalsAndBiometrics(patientUuid: string, mode: VitalsAndBiome
 }
 
 /**
- * Hook to get the vitals and biometrics for a patient associated with a specific encounter
+ * Hook to get the vitals and digipath for a patient associated with a specific encounter
  */
 export function useEncounterVitalsAndBiometrics(encounterUuid: string) {
   const { concepts } = useConfig<ConfigObject>();

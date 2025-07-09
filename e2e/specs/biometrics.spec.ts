@@ -12,14 +12,14 @@ test.beforeEach(async ({ api }) => {
   visit = await startVisit(api, patient.uuid);
 });
 
-test('Add, edit and delete patient biometrics', async ({ page }) => {
+test('Add, edit and delete patient digipath', async ({ page }) => {
   const biometricsPage = new BiometricsAndVitalsPage(page);
 
-  await test.step('When I visit the vitals and biometrics page', async () => {
+  await test.step('When I visit the vitals and digipath page', async () => {
     await biometricsPage.goTo(patient.uuid);
   });
 
-  await test.step('And I click on the `Record biometrics` link to launch the form', async () => {
+  await test.step('And I click on the `Record digipath` link to launch the form', async () => {
     await biometricsPage.page.getByText(/record biometrics/i).click();
   });
 
@@ -51,7 +51,7 @@ test('Add, edit and delete patient biometrics', async ({ page }) => {
     await expect(biometricsPage.page.getByText(/vitals and biometrics saved/i)).toBeVisible();
   });
 
-  await test.step('And I should see the newly recorded biometrics on the page', async () => {
+  await test.step('And I should see the newly recorded digipath on the page', async () => {
     const headerRow = biometricsPage.biometricsTable().locator('thead > tr');
     const dataRow = biometricsPage.biometricsTable().locator('tbody > tr');
 
@@ -65,7 +65,7 @@ test('Add, edit and delete patient biometrics', async ({ page }) => {
     await expect(dataRow).toContainText('25');
   });
 
-  await test.step('When I click the overflow menu on the biometrics row', async () => {
+  await test.step('When I click the overflow menu on the digipath row', async () => {
     await biometricsPage.page
       .getByRole('button', { name: /options/i })
       .nth(0)
@@ -101,7 +101,7 @@ test('Add, edit and delete patient biometrics', async ({ page }) => {
     await expect(biometricsPage.page.getByText(/vitals and biometrics updated/i)).toBeVisible();
   });
 
-  await test.step('And I should see the updated biometrics on the page', async () => {
+  await test.step('And I should see the updated digipath on the page', async () => {
     const headerRow = biometricsPage.biometricsTable().locator('thead > tr');
     const dataRow = biometricsPage.biometricsTable().locator('tbody > tr');
 
@@ -116,7 +116,7 @@ test('Add, edit and delete patient biometrics', async ({ page }) => {
     await expect(dataRow).toContainText('25');
   });
 
-  await test.step('When I click the overflow menu on the biometrics row', async () => {
+  await test.step('When I click the overflow menu on the digipath row', async () => {
     await biometricsPage.page
       .getByRole('button', { name: /options/i })
       .nth(0)

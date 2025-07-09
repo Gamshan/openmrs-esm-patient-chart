@@ -1,5 +1,5 @@
 export const dashboardMeta = {
-  slot: 'patient-chart-vitals-biometrics-dashboard-slot',
+  slot: 'patient-chart-vitals-digipath-dashboard-slot',
   path: 'Vitals & Biometrics',
   title: 'Vitals & Biometrics',
   icon: 'omrs-icon-activity',

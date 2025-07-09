@@ -144,7 +144,7 @@ function setupMockUseEncounterVitalsAndBiometrics() {
 }
 
 describe('VitalsBiometricsForm', () => {
-  it('renders the vitals and biometrics form', async () => {
+  it('renders the vitals and digipath form', async () => {
     render(<VitalsAndBiometricsForm {...testProps} />);
 
     expect(screen.getByText(/vitals/i)).toBeInTheDocument();
@@ -270,7 +270,7 @@ describe('VitalsBiometricsForm', () => {
     );
   });
 
-  it('correctly initializes the form with existing vitals and biometrics data while in edit mode', async () => {
+  it('correctly initializes the form with existing vitals and digipath data while in edit mode', async () => {
     setupMockUseEncounterVitalsAndBiometrics();
     render(<VitalsAndBiometricsForm {...testProps} formContext="editing" editEncounterUuid="encounter-uuid" />);
 
@@ -285,7 +285,7 @@ describe('VitalsBiometricsForm', () => {
     expect(screen.getByRole('spinbutton', { name: /muac/i })).toHaveValue(25);
   });
 
-  it('edits patient vitals and biometrics', async () => {
+  it('edits patient vitals and digipath', async () => {
     const user = userEvent.setup();
     setupMockUseEncounterVitalsAndBiometrics();
 
@@ -355,7 +355,7 @@ describe('VitalsBiometricsForm', () => {
     );
   });
 
-  it('renders an error snackbar if there was a problem saving vitals and biometrics', async () => {
+  it('renders an error snackbar if there was a problem saving vitals and digipath', async () => {
     const user = userEvent.setup();
 
     const error = {

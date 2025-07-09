@@ -22,8 +22,8 @@ const DeleteVitalsAndBiometricsModal: React.FC<DeleteVitalsAndBiometricsModalPro
       showSnackbar({
         isLowContrast: false,
         kind: 'error',
-        title: t('errorDeleting', 'Error deleting vitals and biometrics'),
-        subtitle: t('encounterUuidRequired', 'Encounter UUID is required to delete vitals and biometrics'),
+        title: t('errorDeleting', 'Error deleting vitals and digipath'),
+        subtitle: t('encounterUuidRequired', 'Encounter UUID is required to delete vitals and digipath'),
       });
       return;
     }
@@ -36,7 +36,7 @@ const DeleteVitalsAndBiometricsModal: React.FC<DeleteVitalsAndBiometricsModalPro
         showSnackbar({
           isLowContrast: true,
           kind: 'success',
-          title: t('vitalsAndBiometricsDeleted', 'Vitals and biometrics deleted'),
+          title: t('vitalsAndBiometricsDeleted', 'Vitals and digipath deleted'),
         });
       })
       .catch((error) => {
@@ -44,7 +44,7 @@ const DeleteVitalsAndBiometricsModal: React.FC<DeleteVitalsAndBiometricsModalPro
         showSnackbar({
           isLowContrast: false,
           kind: 'error',
-          title: t('errorDeleting', 'Error deleting vitals and biometrics'),
+          title: t('errorDeleting', 'Error deleting vitals and digipath'),
           subtitle: error?.message,
         });
       })
@@ -55,13 +55,13 @@ const DeleteVitalsAndBiometricsModal: React.FC<DeleteVitalsAndBiometricsModalPro
     <>
       <ModalHeader
         closeModal={closeDeleteModal}
-        title={t('deleteVitalsAndBiometrics', 'Delete vitals and biometrics')}
+        title={t('deleteVitalsAndBiometrics', 'Delete vitals and digipath')}
       />
       <ModalBody>
         <p>
           {t(
             'deleteConfirmationText',
-            'Note: Deleting these entries will also remove related vitals or biometrics data. Are you sure you want to continue?',
+            'Note: Deleting these entries will also remove related vitals or digipath data. Are you sure you want to continue?',
           )}
         </p>
       </ModalBody>

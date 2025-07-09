@@ -50,7 +50,7 @@ There are two approaches for working on multiple microfrontends simultaneously.
 You could run `yarn start` with as many `sources` arguments as you require. For example, to run the biometrics and vitals microfrontends simultaneously, you'd use:
 
 ```bash
-yarn start --sources 'packages/esm-patient-biometrics-app' --sources 'packages/esm-patient-vitals-app'
+yarn start --sources 'packages/esm-patient-digipath-app' --sources 'packages/esm-patient-vitals-app'
 ```
 
 Alternatively, you could run `yarn serve` from within the individual packages and then use [import map overrides](http://o3-dev.docs.openmrs.org/#/getting_started/setup?id=import-map-overrides).

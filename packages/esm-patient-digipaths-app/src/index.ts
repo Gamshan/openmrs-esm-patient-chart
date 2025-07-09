@@ -8,7 +8,7 @@ import {
 } from '@openmrs/esm-framework';
 import { createDashboardLink } from '@openmrs/esm-patient-common-lib';
 import { configSchema } from './config-schema';
-import digipathsOverviewComponent from './biometrics/digipaths-overview.component';
+import digipathsOverviewComponent from './digipath/digipaths-overview.component';
 
 const moduleName = '@openmrs/esm-patient-digipaths-app';
 

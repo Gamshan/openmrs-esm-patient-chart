@@ -475,7 +475,7 @@ const VitalsAndBiometricsForm: React.FC<VitalsAndBiometricsFormProps> = ({
         </Stack>
         <Stack className={styles.spacer}>
           <Column>
-            <p className={styles.title}>{t('recordBiometrics', 'Record biometrics')}</p>
+            <p className={styles.title}>{t('recordBiometrics', 'Record digipath')}</p>
           </Column>
           <Row className={styles.row}>
             <Column>
@@ -588,7 +588,7 @@ const VitalsAndBiometricsForm: React.FC<VitalsAndBiometricsFormProps> = ({
             className={styles.errorNotification}
             lowContrast={false}
             onClose={() => setHasInvalidVitals(false)}
-            title={t('vitalsAndBiometricsSaveError', 'Error saving vitals and biometrics')}
+            title={t('vitalsAndBiometricsSaveError', 'Error saving vitals and digipath')}
             subtitle={t('checkForValidity', 'Some of the values entered are invalid')}
           />
         </Column>

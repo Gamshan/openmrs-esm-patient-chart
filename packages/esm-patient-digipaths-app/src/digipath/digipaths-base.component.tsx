@@ -26,7 +26,7 @@ const DigipathsBase: React.FC<DigiPathBaseProps> = ({ patientUuid, pageSize, url
 
   const config = useConfig<ConfigObject>();
   const { bmiUnit } = config.biometrics;
-  // const { data: biometrics, isValidating } = useVitalsAndBiometrics(patientUuid, 'biometrics');
+  // const { data: digipath, isValidating } = useVitalsAndBiometrics(patientUuid, 'digipath');
   const { currentVisit } = useVisitOrOfflineVisit(patientUuid);
 
   const { isLoading, data: digipathData, error } = useDigipathData(patientUuid);
@@ -99,7 +99,7 @@ const DigipathsBase: React.FC<DigiPathBaseProps> = ({ patientUuid, pageSize, url
           {/*    <Button*/}
           {/*      kind="ghost"*/}
           {/*      renderIcon={(props) => <Add size={16} {...props} />}*/}
-          {/*      iconDescription="Add biometrics"*/}
+          {/*      iconDescription="Add digipath"*/}
           {/*      onClick={launchBiometricsForm}*/}
           {/*    >*/}
           {/*      {t('add', 'Add')}*/}

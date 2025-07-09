@@ -17,11 +17,11 @@ test('Add, edit and delete patient vitals', async ({ page }) => {
   const headerRow = vitalsPage.vitalsTable().locator('thead > tr');
   const dataRow = vitalsPage.vitalsTable().locator('tbody > tr');
 
-  await test.step('When I visit the vitals and biometrics page', async () => {
+  await test.step('When I visit the vitals and digipath page', async () => {
     await vitalsPage.goTo(patient.uuid);
   });
 
-  await test.step('And I click the `Record biometrics` link to launch the form', async () => {
+  await test.step('And I click the `Record digipath` link to launch the form', async () => {
     await vitalsPage.page.getByText(/record vital signs/i).click();
   });
 
@@ -161,11 +161,11 @@ test('Add low and critically low range patient vitals', async ({ page }) => {
   const headerRow = vitalsPage.vitalsTable().locator('thead > tr');
   const dataRow = vitalsPage.vitalsTable().locator('tbody > tr');
 
-  await test.step('When I visit the vitals and biometrics page', async () => {
+  await test.step('When I visit the vitals and digipath page', async () => {
     await vitalsPage.goTo(patient.uuid);
   });
 
-  await test.step('And I click the `Record biometrics` link to launch the form', async () => {
+  await test.step('And I click the `Record digipath` link to launch the form', async () => {
     await vitalsPage.page.getByText(/record vital signs/i).click();
   });
 
@@ -247,11 +247,11 @@ test('Add high and critically high range patient vitals', async ({ page }) => {
   const headerRow = vitalsPage.vitalsTable().locator('thead > tr');
   const dataRow = vitalsPage.vitalsTable().locator('tbody > tr');
 
-  await test.step('When I visit the vitals and biometrics page', async () => {
+  await test.step('When I visit the vitals and digipath page', async () => {
     await vitalsPage.goTo(patient.uuid);
   });
 
-  await test.step('And I click the `Record biometrics` link to launch the form', async () => {
+  await test.step('And I click the `Record digipath` link to launch the form', async () => {
     await vitalsPage.page.getByText(/record vital signs/i).click();
   });
 

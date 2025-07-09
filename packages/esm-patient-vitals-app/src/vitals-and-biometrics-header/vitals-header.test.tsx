@@ -205,7 +205,7 @@ describe('VitalsHeader', () => {
     expect(screen.getByTitle(/abnormal value/i)).toBeInTheDocument();
   });
 
-  it('should launch Form Entry vitals and biometrics form', async () => {
+  it('should launch Form Entry vitals and digipath form', async () => {
     const user = userEvent.setup();
 
     mockUseConfig.mockReturnValue({
