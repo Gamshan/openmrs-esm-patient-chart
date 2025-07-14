@@ -1,6 +1,6 @@
 {
   "name": "@openmrs/esm-patient-digipaths-app",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MPL-2.0",
   "description": "Patient digipaths microfrontend for the OpenMRS SPA",
   "browser": "dist/openmrs-esm-patient-digipaths-app.js",
