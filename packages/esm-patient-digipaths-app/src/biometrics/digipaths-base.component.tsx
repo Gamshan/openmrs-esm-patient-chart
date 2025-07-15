@@ -20,7 +20,7 @@ interface DigiPathBaseProps {
 const DigipathsBase: React.FC<DigiPathBaseProps> = ({ patientUuid, pageSize, urlLabel, pageUrl }) => {
   const { t } = useTranslation();
   const displayText = t('digipaths_lower', 'digipaths');
-  const headerTitle = t('digipaths', 'Digipaths');
+  const headerTitle = t('digipaths', 'Digipath Recommendations');
   const [chartView, setChartView] = useState(false);
   const isTablet = useLayoutType() === 'tablet';
 
@@ -34,21 +34,22 @@ const DigipathsBase: React.FC<DigiPathBaseProps> = ({ patientUuid, pageSize, url
   const tableHeaders: Array<DigipathsTableHeader> = [
     {
       key: 'dateRender',
-      header: t('dateAndTime', 'Date and time'),
+      header: t('date', 'Date'),
       isSortable: true,
       sortFunc: (valueA, valueB) => new Date(valueA.dateRender).getTime() - new Date(valueB.dateRender).getTime(),
     },
     {
-      key: 'titleRender',
-      header: t('title', 'Title'),
-      isSortable: true,
-      sortFunc: (valueA, valueB) => (valueA.height && valueB.height ? valueA.height - valueB.height : 0),
-    },
-    {
-      key: 'actionRender',
-      header: t('action', 'Action'),
+      key: 'messageRender',
+      header: t('message', 'Message'),
       isSortable: true,
       sortFunc: (valueA, valueB) => (valueA.weight && valueB.weight ? valueA.weight - valueB.weight : 0),
+    },
+
+    {
+      key: 'recommendationRender',
+      header: 'Recommendation',
+      isSortable: false,
+      sortFunc: () => 0,
     },
   ];
 
@@ -58,9 +59,17 @@ const DigipathsBase: React.FC<DigiPathBaseProps> = ({ patientUuid, pageSize, url
         return {
           ...digipath,
           id: `${index}`,
-          dateRender: digipath.date ? formatDatetime(parseDate(digipath.date.toString()), { mode: 'wide' }) : '--',
-          titleRender: digipath.title,
-          actionRender: digipath.description,
+          dateRender: digipath.date
+            ? new Date(digipath.date.toString())
+                .toLocaleDateString('en-US', {
+                  day: '2-digit',
+                  month: 'long',
+                  year: 'numeric',
+                })
+                .replace(/^(\d{2}) ([A-Za-z]+) (\d{4})$/, '$1, $2, $3')
+            : '--',
+          messageRender: digipath.message,
+          recommendationRender: digipath.recommendation,
         };
       }),
     [digipathData],
