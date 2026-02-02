@@ -1,6 +1,6 @@
 {
   "name": "@openmrs/esm-patient-digipaths-app",
-  "version": "0.0.1",
+  "version": "1.0.0-1",
   "license": "MPL-2.0",
   "description": "Patient digipaths microfrontend for the OpenMRS SPA",
   "browser": "dist/openmrs-esm-patient-digipaths-app.js",
@@ -40,7 +40,8 @@
     "@carbon/charts-react": "^1.23.0",
     "@carbon/react": "^1.83.0",
     "@openmrs/esm-patient-common-lib": "next",
-    "lodash-es": "^4.17.21"
+    "lodash-es": "^4.17.21",
+    "marked": "17.0.1"
   },
   "peerDependencies": {
     "@openmrs/esm-framework": "6.x",
