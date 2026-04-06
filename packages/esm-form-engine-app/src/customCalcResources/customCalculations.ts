@@ -330,10 +330,10 @@ async function calcCVDRiskCategory(
     bmiPromise,
   );
 
-  if (riskScore < 10) return 'Low (<10%)';
-  else if (riskScore <= 20) return 'Moderate (10-20 %)';
-  else if (riskScore < 30) return 'High (21-30 %)';
-  else return 'Very High (>30%)';
+  if (riskScore < 10) return '443b8cb7-9e94-5833-94d7-543030828741';
+  else if (riskScore <= 20) return '1b2a4e25-4c06-580b-b02d-a7d4055bfd52';
+  else if (riskScore < 30) return '5166e8c2-8d52-5698-9d97-f060fb59590a';
+  else return '9781d735-e509-5595-b9ce-4d0a116df5f9';
 }
 
 async function calcTest(val) {
