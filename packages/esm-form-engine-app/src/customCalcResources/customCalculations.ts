@@ -174,7 +174,7 @@ function calcSouthEastAsiaNonLabCVDRisk2(age, gender, sbp, diabetes, smoker, cho
   if (!ageGroup || !bpGroup || !cholGroup) return null;
 
   try {
-    return getCategory(data[gender][ageGroup][diabKey][smokeKey][bpGroup][cholGroup]);
+    return getCategory(data[gender][ageGroup][diabKey][smokeKey][bpGroup][cholGroup]) + '%';
   } catch (e) {
     return 'Invalid Data';
   }
@@ -265,7 +265,7 @@ function calcCDK_Risk(gender, age, scr, uACR) {
   return calcEGFR_Stage(gender, age, scr) + calcUACR_Category(uACR);
 }
 
-async function calcSouthEastAsiaNonLabCVDRisk(
+async function calcSouthEastAsiaNonLabCVDRiskScore(
   sex: 'M' | 'F',
   smoker?: boolean,
   age?: number,
@@ -300,8 +300,35 @@ async function calcSouthEastAsiaNonLabCVDRisk(
   return southEastAsiaCvdRiskTables[sexIdx][smokerIdx][ageIdx][sbpIdx][bmiIdx];
 }
 
-async function calcCVDRiskCategory(sex: 'M' | 'F', smoker?: boolean, age?: number, sbpPromise?, bmiPromise?) {
-  const riskScore = await calcSouthEastAsiaNonLabCVDRisk(sex, smoker, age, sbpPromise, bmiPromise);
+async function calcSouthEastAsiaNonLabCVDRisk(
+  sex: 'M' | 'F',
+  smoker?: boolean,
+  age?: number,
+  sbpPromise?,
+  bmiPromise?,
+) {
+  const risk = await calcSouthEastAsiaNonLabCVDRiskScore(sex, smoker, age, sbpPromise, bmiPromise);
+  return risk + '%';
+}
+
+async function calcCVDRiskCategory(
+  patientId,
+  sex: 'M' | 'F',
+  smoker?: boolean,
+  age?: number,
+  sbpPromise?,
+  cholPromise?,
+  bmiPromise?,
+) {
+  const riskScore = await calcSouthEastAsiaCVDRiskScore(
+    patientId,
+    sex,
+    smoker,
+    age,
+    sbpPromise,
+    cholPromise,
+    bmiPromise,
+  );
 
   if (riskScore < 10) return 'Low (<10%)';
   else if (riskScore <= 20) return 'Moderate (10-20 %)';
@@ -313,7 +340,7 @@ async function calcTest(val) {
   return 19;
 }
 
-async function calcSouthEastAsiaLabCVDRisk(
+async function calcSouthEastAsiaLabCVDRiskScore(
   patientId,
   sex: 'M' | 'F',
   smoker?: boolean,
@@ -353,7 +380,19 @@ async function calcSouthEastAsiaLabCVDRisk(
   return southEastAsiaCvdRiskTablesLaboratory[diabetesIdx][sexIdx][smokerIdx][ageIdx][sbpIdx][cholIdx];
 }
 
-async function calcSouthEastAsiaCVDRisk(
+async function calcSouthEastAsiaLabCVDRisk(
+  patientId,
+  sex: 'M' | 'F',
+  smoker?: boolean,
+  age?: number,
+  sbpPromise?,
+  cholPromise?,
+) {
+  const risk = await calcSouthEastAsiaLabCVDRiskScore(patientId, sex, smoker, age, sbpPromise, cholPromise);
+  return risk + '%';
+}
+
+async function calcSouthEastAsiaCVDRiskScore(
   patientId,
   sex: 'M' | 'F',
   smoker?: boolean,
@@ -365,8 +404,21 @@ async function calcSouthEastAsiaCVDRisk(
   const chol = await cholPromise;
 
   if (chol && chol.valueQuantity && chol.valueQuantity.value && chol.issued && !isOneYearAgo(chol.issued)) {
-    return await calcSouthEastAsiaLabCVDRisk(patientId, sex, smoker, age, sbpPromise, chol.valueQuantity.value);
-  } else return await calcSouthEastAsiaNonLabCVDRisk(sex, smoker, age, sbpPromise, bmiPromise);
+    return await calcSouthEastAsiaLabCVDRiskScore(patientId, sex, smoker, age, sbpPromise, chol.valueQuantity.value);
+  } else return await calcSouthEastAsiaNonLabCVDRiskScore(sex, smoker, age, sbpPromise, bmiPromise);
+}
+
+async function calcSouthEastAsiaCVDRisk(
+  patientId,
+  sex: 'M' | 'F',
+  smoker?: boolean,
+  age?: number,
+  sbpPromise?,
+  cholPromise?,
+  bmiPromise?,
+) {
+  const risk = await calcSouthEastAsiaCVDRiskScore(patientId, sex, smoker, age, sbpPromise, cholPromise, bmiPromise);
+  return risk + '%';
 }
 
 function isOneYearAgo(date: string) {
