@@ -34,12 +34,13 @@ interface VitalsOverviewProps {
 const VitalsOverview: React.FC<VitalsOverviewProps> = ({ patientUuid, patient, pageSize, urlLabel, pageUrl }) => {
   const { t } = useTranslation();
   const config = useConfig<ConfigObject>();
+  const displayText = t('vitalSigns', 'vital signs');
   const headerTitle = t('vitals', 'Vitals');
   const [chartView, setChartView] = useState(false);
   const isTablet = useLayoutType() === 'tablet';
   const [isPrinting, setIsPrinting] = useState(false);
   const contentToPrintRef = useRef(null);
-  const launchVitalsBiometricsForm = useLaunchVitalsAndBiometricsForm();
+  const launchVitalsBiometricsForm = useLaunchVitalsAndBiometricsForm(patientUuid);
 
   const { excludePatientIdentifierCodeTypes } = useConfig();
   const { data: vitals, error, isLoading, isValidating } = useVitalsAndBiometrics(patientUuid);
@@ -242,6 +243,7 @@ const VitalsOverview: React.FC<VitalsOverviewProps> = ({ patientUuid, patient, p
                     tableHeaders={tableHeaders}
                     tableRows={tableRows}
                     urlLabel={urlLabel}
+                    patient={patient}
                   />
                 </div>
               )}
@@ -249,11 +251,7 @@ const VitalsOverview: React.FC<VitalsOverviewProps> = ({ patientUuid, patient, p
           );
         }
         return (
-          <EmptyState
-            displayText={t('vitalSigns', 'Vital signs')}
-            headerTitle={headerTitle}
-            launchForm={launchVitalsBiometricsForm}
-          />
+          <EmptyState displayText={displayText} headerTitle={headerTitle} launchForm={launchVitalsBiometricsForm} />
         );
       })()}
     </>
