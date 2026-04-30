@@ -1,23 +1,6 @@
 import { defineConfigSchema, getAsyncLifecycle, getConfig } from '@openmrs/esm-framework';
 import { registerExpressionHelper } from '@openmrs/esm-form-engine-lib';
 import { configSchema, type ConfigObject } from './config-schema';
-import {
-  calcBpControl,
-  calcCDK_Risk,
-  calcCVDRiskCategory,
-  calcEGFR,
-  calcEGFR_Stage,
-  calcFootCare,
-  calcHtnGrade,
-  calcPhq9,
-  calcPhq9Grade,
-  calcSouthEastAsiaCVDRisk,
-  calcSouthEastAsiaLabCVDRisk,
-  calcSouthEastAsiaNonLabCVDRisk,
-  calcSouthEastAsiaNonLabCVDRisk2,
-  calcTest,
-  calcUACR_Category,
-} from './customCalcResources/customCalculations';
 
 const moduleName = '@openmrs/esm-form-engine-app';
 
@@ -30,21 +13,6 @@ export const importTranslation = require.context('../translations', false, /.jso
 
 export async function startupApp() {
   defineConfigSchema(moduleName, configSchema);
-  registerExpressionHelper('calcHtnGrade', calcHtnGrade);
-  registerExpressionHelper('calcBpControl', calcBpControl);
-  registerExpressionHelper('calcSouthEastAsiaNonLabCVDRisk2', calcSouthEastAsiaNonLabCVDRisk2);
-  registerExpressionHelper('calcFootCare', calcFootCare);
-  registerExpressionHelper('calcPhq9', calcPhq9);
-  registerExpressionHelper('calcPhq9Grade', calcPhq9Grade);
-  registerExpressionHelper('calcEGFR', calcEGFR);
-  registerExpressionHelper('calcEGFR_Stage', calcEGFR_Stage);
-  registerExpressionHelper('calcUACR_Category', calcUACR_Category);
-  registerExpressionHelper('calcCDK_Risk', calcCDK_Risk);
-  registerExpressionHelper('calcSouthEastAsiaNonLabCVDRisk', calcSouthEastAsiaNonLabCVDRisk);
-  registerExpressionHelper('calcCVDRiskCategory', calcCVDRiskCategory);
-  registerExpressionHelper('calcTest', calcTest);
-  registerExpressionHelper('calcSouthEastAsiaLabCVDRisk', calcSouthEastAsiaLabCVDRisk);
-  registerExpressionHelper('calcSouthEastAsiaCVDRisk', calcSouthEastAsiaCVDRisk);
 
   try {
     // Load config and register expression helper with configured concepts

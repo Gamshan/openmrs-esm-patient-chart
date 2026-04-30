@@ -1,16 +1,19 @@
 import { getCondition } from './data.resource';
 import data from './who-south-asia-cvd.json';
 import { southEastAsiaCvdRiskTables, southEastAsiaCvdRiskTablesLaboratory } from './risk-dataset-table';
-
+import { conceptCodes } from './concept-codes';
 async function calcHtnGrade(systolic, diastolic) {
   let sbp = await systolic;
   let dbp = await diastolic;
 
-  if (sbp >= 180 || dbp >= 110) return 'Severe hypertension';
-  else if (sbp >= 160 || dbp >= 100) return 'Grade 2';
-  else if (sbp >= 140 || dbp >= 90) return 'Grade 1';
-  else if (sbp < 60 || dbp < 40) return 'Abnormal';
-  else return 'Normal';
+  if (sbp >= 180 || dbp >= 110)
+    return '165205AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'; // Grade 3
+  else if (sbp >= 160 || dbp >= 100)
+    return '165204AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'; // Grade 2
+  else if (sbp >= 140 || dbp >= 90)
+    return '165203AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'; // Grade 1
+  else if (sbp < 60 || dbp < 40) return 'ddb2407f-d6fb-4251-9e60-7624d0d01c64';
+  else return '165206AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 }
 
 async function calcBpControl(age, systolic, diastolic) {
@@ -27,9 +30,9 @@ async function calcBpControl(age, systolic, diastolic) {
   const targetDBP = dbp < 80 && dbp >= 70;
 
   if (targetSBP && targetDBP) {
-    return 'Controlled';
+    return 'd39019f3-840c-4a53-b715-de302a8c3e63'; //control
   } else {
-    return 'Uncontrolled';
+    return '3f5b99b3-6727-435d-b450-d8c679fbea6b'; // un
   }
 }
 
@@ -101,31 +104,6 @@ async function customCalculator(condition) {
 // }
 //
 
-function getAgeGroup(age) {
-  if (age <= 44) return '40-44';
-  if (age <= 49) return '45-49';
-  if (age <= 54) return '50-54';
-  if (age <= 59) return '55-59';
-  if (age <= 64) return '60-64';
-  if (age <= 69) return '65-69';
-  return '70-74';
-}
-
-function getBPIndex(bp) {
-  if (bp < 120) return 0;
-  if (bp < 140) return 1;
-  if (bp < 160) return 2;
-  if (bp < 180) return 3;
-  return 4;
-}
-
-function getCholIndex(chol) {
-  if (chol < 5) return 0;
-  if (chol < 6) return 1;
-  if (chol < 7) return 2;
-  return 3;
-}
-
 function calcFootCare(
   Featuresofactivediabeticfootdisease,
   Amputation,
@@ -135,17 +113,17 @@ function calcFootCare(
   SensationUsingMonofilament,
   DorsalisPedisPosteriorTibialPulses,
 ) {
-  if (Featuresofactivediabeticfootdisease === '3225ad6e-387c-465e-b2e1-ac6d85ed77a2')
+  if (Featuresofactivediabeticfootdisease === '1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
     return 'Active diabetic foot disease';
 
-  if (Amputation === '3498f1da-1bca-4405-9e06-0fb3b79871da' || Dialysis === 'a9f0dbd9-7b7e-480a-97b8-47926e55aac3')
+  if (Amputation === '1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' || Dialysis === '1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
     return 'High risk';
 
   let moderateScore = 0;
-  if (deformity === 'f958313b-b1f8-4b16-8a4e-3f552d4e40a4') moderateScore = +1;
-  if (Reflexes === '0e01f0f3-d563-4500-afa6-d220f9ad0ce3') moderateScore = +1;
-  if (SensationUsingMonofilament === '6ad23b03-9f2d-4841-af32-ed9ba0ac0005') moderateScore = +1;
-  if (DorsalisPedisPosteriorTibialPulses === 'e0bb89bd-0310-4054-a0b3-562e96aec078') moderateScore = +1;
+  if (deformity === '1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA') moderateScore = moderateScore + 1;
+  if (Reflexes === '1116AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA') moderateScore = moderateScore + 1;
+  if (SensationUsingMonofilament === '1116AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA') moderateScore = moderateScore + 1;
+  if (DorsalisPedisPosteriorTibialPulses === '1116AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA') moderateScore = moderateScore + 1;
 
   if (moderateScore >= 2) return 'High risk';
   else if (moderateScore > 0) return 'Moderate risk';
@@ -224,45 +202,93 @@ async function getTest(value) {
   return await value;
 }
 
-function calcEGFR(gender, age, scr) {
+async function calcEGFR(gender, age, scr) {
   const isFemale = gender === 'F';
 
   const k = isFemale ? 0.7 : 0.9;
   const a = isFemale ? -0.241 : -0.302;
   const sexFactor = isFemale ? 1.012 : 1.0;
 
-  const ratio = scr / k;
+  const ratio = (await scr) / k;
 
   const minPart = Math.pow(Math.min(ratio, 1), a);
   const maxPart = Math.pow(Math.max(ratio, 1), -1.2);
 
-  return 142 * minPart * maxPart * Math.pow(0.9938, age) * sexFactor;
+  const result = 142 * minPart * maxPart * Math.pow(0.9938, age) * sexFactor;
+  return Math.round(+result.toFixed(2));
 }
 
-function calcEGFR_Stage(gender, age, scr) {
-  const eGFR = calcEGFR(gender, age, scr);
+async function calcEGFR_Stage(gender, age, scr) {
+  const eGFR = await calcEGFR(gender, age, scr);
 
   if (!scr || !eGFR) return '';
 
-  if (eGFR >= 90) return 'G1';
-  else if (eGFR >= 60) return 'G2';
-  else if (eGFR >= 45) return 'G3a';
-  else if (eGFR >= 30) return 'G3b';
-  else if (eGFR >= 15) return 'G4';
-  else return 'G5';
+  if (eGFR >= 90)
+    return conceptCodes['G1']; //G1
+  else if (eGFR >= 60)
+    return conceptCodes['G2']; // G2
+  else if (eGFR >= 45)
+    return conceptCodes['G3a']; // G3a
+  else if (eGFR >= 30)
+    return conceptCodes['G3b']; // G3b
+  else if (eGFR >= 15)
+    return conceptCodes['G4']; // G4
+  else return conceptCodes['G5']; // G5
 }
 
 function calcUACR_Category(uACR) {
   if (!uACR) return '';
 
-  if (uACR < 30) return 'A1';
-  if (uACR < 300) return 'A2';
-  else return 'A3';
+  if (uACR < 30) return conceptCodes['A1']; // A1
+  if (uACR < 300)
+    return conceptCodes['A2']; // A2
+  else return conceptCodes['A3']; // A3
 }
 
-function calcCDK_Risk(gender, age, scr, uACR) {
+async function calcCDK_Risk(gender, age, scr, uACR) {
   if (!uACR || !scr) return '';
-  return calcEGFR_Stage(gender, age, scr) + calcUACR_Category(uACR);
+  const ckdRisk = (await calcEGFR_Stage(gender, age, scr)) + calcUACR_Category(uACR);
+
+  switch (ckdRisk) {
+    case conceptCodes['G1'] + conceptCodes['A1']:
+      return 'a7b3aa06-223c-52b2-84b5-a495dffd81fd';
+    case conceptCodes['G2'] + conceptCodes['A1']:
+      return 'bae75281-7a46-59b2-9ba8-f77d471cb832';
+    case conceptCodes['G3a'] + conceptCodes['A1']:
+      return '60063d49-cff2-51ff-a9f6-de8a48cc5a68';
+    case conceptCodes['G3b'] + conceptCodes['A1']:
+      return '4ee3092d-da29-5ab0-8562-4670bb3317ee';
+    case conceptCodes['G4'] + conceptCodes['A1']:
+      return '119fe70c-44b0-519e-9880-ae25d0b0052e';
+    case conceptCodes['G5'] + conceptCodes['A1']:
+      return '8f1214c9-1dfb-5ee4-aab3-4692afa5da27';
+    case conceptCodes['G1'] + conceptCodes['A2']:
+      return 'd8d11f0c-787c-5e2a-a759-72afd58e87a4';
+    case conceptCodes['G2'] + conceptCodes['A2']:
+      return '0ce38575-eda1-5dfa-9bfc-9940750bb0bf';
+    case conceptCodes['G3a'] + conceptCodes['A2']:
+      return 'c4fac37c-0bff-5d03-bf8d-893ca9f801b3';
+    case conceptCodes['G3b'] + conceptCodes['A2']:
+      return 'a371154a-ee8c-5375-9144-3086a9c6d065';
+    case conceptCodes['G4'] + conceptCodes['A2']:
+      return 'c46d38a0-b953-5f4e-9eca-f3f9b77f8c31';
+    case conceptCodes['G5'] + conceptCodes['A2']:
+      return '1c874a66-dea1-5cde-a552-491757e8fb63';
+    case conceptCodes['G1'] + conceptCodes['A3']:
+      return 'ebd839ff-d386-5fa9-8769-bfcb66a7b4c6';
+    case conceptCodes['G2'] + conceptCodes['A3']:
+      return '36650ce0-9a16-5bda-827b-563b5282b4cc';
+    case conceptCodes['G3a'] + conceptCodes['A3']:
+      return 'bf929d5b-2964-5b4d-9301-4933d5b1b1b0';
+    case conceptCodes['G3b'] + conceptCodes['A3']:
+      return 'b9c4e776-4d2d-5c59-a5b9-ff3c4d0e9e5c';
+    case conceptCodes['G4'] + conceptCodes['A3']:
+      return '1972734a-30ea-5c15-bf9a-3843b86e0d03';
+    case conceptCodes['G5'] + conceptCodes['A3']:
+      return '9a22772e-1f9c-5fcb-ab66-9fa5b1c77b38';
+    default:
+      return '';
+  }
 }
 
 async function calcSouthEastAsiaNonLabCVDRiskScore(
@@ -286,18 +312,44 @@ async function calcSouthEastAsiaNonLabCVDRiskScore(
     return null;
   }
   // Bin functions
-  const getAgeBin = (age) => Math.floor((Math.min(Math.max(40, age), 74) - 40) / 5);
+  const getAgeBin = (age) => Math.floor((Math.min(Math.max(age, 40), 74) - 40) / 5);
   const getSbpBin = (sbp) => Math.max(0, Math.floor((Math.min(sbp, 180) - 120) / 20) + 1);
   const getBmiBin = (bmi) => Math.max(0, Math.floor((Math.min(bmi, 35) - 20) / 5) + 1);
 
   // Variables
   const sexIdx = sex === 'M' ? 0 : 1;
   const smokerIdx = smoker ? 1 : 0;
-  const ageIdx = 6 - getAgeBin(age);
+  const ageIdx = getAgeIndex(age);
   const bmiIdx = getBmiBin(bmi);
-  const sbpIdx = 4 - getSbpBin(sbp);
+  const sbpIdx = getSBPIndex(sbp);
 
   return southEastAsiaCvdRiskTables[sexIdx][smokerIdx][ageIdx][sbpIdx][bmiIdx];
+}
+
+function getAgeIndex(age) {
+  if (age >= 70) return 0;
+  if (age >= 65) return 1;
+  if (age >= 60) return 2;
+  if (age >= 55) return 3;
+  if (age >= 50) return 4;
+  if (age >= 45) return 5;
+  return 6;
+}
+
+function getSBPIndex(sbp) {
+  if (sbp >= 180) return 0;
+  if (sbp >= 160) return 1;
+  if (sbp >= 140) return 2;
+  if (sbp >= 120) return 3;
+  return 4;
+}
+
+function getCholIndex(chol) {
+  if (chol < 4) return 0;
+  if (chol < 5) return 1;
+  if (chol < 6) return 2;
+  if (chol < 7) return 3;
+  return 4;
 }
 
 async function calcSouthEastAsiaNonLabCVDRisk(
@@ -330,14 +382,15 @@ async function calcCVDRiskCategory(
     bmiPromise,
   );
 
-  if (riskScore < 10) return '443b8cb7-9e94-5833-94d7-543030828741';
-  else if (riskScore <= 20) return '1b2a4e25-4c06-580b-b02d-a7d4055bfd52';
-  else if (riskScore < 30) return '5166e8c2-8d52-5698-9d97-f060fb59590a';
-  else return '9781d735-e509-5595-b9ce-4d0a116df5f9';
+  if (riskScore < 5) return '7d5a45c0-eb6b-508a-a1b7-185637ebdb0b';
+  else if (riskScore < 10) return '8892e750-b84e-5156-bb4d-31f4c6f2fc7e';
+  else if (riskScore <= 20) return '6ed15378-5a9f-5b8f-807b-9b5d8dea104b';
+  else if (riskScore < 30) return 'bd4efb2a-cf82-5a43-bb6e-46287f5f6097';
+  else return '47c35b6d-2bd5-5eb6-952e-aff7a7043dc1';
 }
 
 async function calcTest(val) {
-  return 19;
+  return val;
 }
 
 async function calcSouthEastAsiaLabCVDRiskScore(
@@ -364,18 +417,18 @@ async function calcSouthEastAsiaLabCVDRiskScore(
   if (!hasValidValues) {
     return null;
   }
-
-  // Bin functions
-  const getAgeBin = (age) => Math.floor((Math.min(Math.max(40, age), 74) - 40) / 5);
-  const getSbpBin = (sbp) => Math.max(0, Math.floor((Math.min(sbp, 180) - 120) / 20) + 1);
-  const getCholBin = (chol) => Math.max(0, Math.min(4, Math.floor(chol - 3)));
+  //
+  // // Bin functions
+  // const getAgeBin = (age) => Math.floor((Math.min(Math.max(40, age), 74) - 40) / 5);
+  // const getSbpBin = (sbp) => Math.max(0, Math.min(4, 4 - Math.floor((Math.min(sbp, 180) - 120) / 20)));
+  // const getCholBin = (chol) => Math.max(0, Math.min(4, Math.floor(chol - 3)));
 
   const sexIdx = sex === 'M' ? 0 : 1;
   const smokerIdx = smoker ? 1 : 0;
   const diabetesIdx = isActiveDiabetes ? 1 : 0;
-  const ageIdx = 6 - getAgeBin(age);
-  const sbpIdx = 4 - getSbpBin(sbp);
-  const cholIdx = getCholBin(chol);
+  const ageIdx = getAgeIndex(age);
+  const sbpIdx = getSBPIndex(sbp);
+  const cholIdx = getCholIndex(chol);
 
   return southEastAsiaCvdRiskTablesLaboratory[diabetesIdx][sexIdx][smokerIdx][ageIdx][sbpIdx][cholIdx];
 }
