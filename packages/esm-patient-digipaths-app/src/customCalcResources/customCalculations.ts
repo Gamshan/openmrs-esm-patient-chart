@@ -6,14 +6,12 @@ async function calcHtnGrade(systolic, diastolic) {
   let sbp = await systolic;
   let dbp = await diastolic;
 
-  if (sbp >= 180 || dbp >= 110)
-    return '165205AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'; // Grade 3
-  else if (sbp >= 160 || dbp >= 100)
-    return '165204AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'; // Grade 2
-  else if (sbp >= 140 || dbp >= 90)
-    return '165203AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'; // Grade 1
-  else if (sbp < 60 || dbp < 40) return 'ddb2407f-d6fb-4251-9e60-7624d0d01c64';
-  else return '165206AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+  if (sbp < 60 || dbp < 40) return conceptCodes['LowBP'];
+  else if (sbp >= 180 || dbp >= 110) return conceptCodes['Severe'];
+  else if (sbp >= 160 || dbp >= 100) return conceptCodes['Moderate'];
+  else if (sbp >= 140 || dbp >= 90) return conceptCodes['Mild'];
+  else if ((sbp >= 120 && sbp <= 139) || (dbp >= 80 && dbp <= 89)) return conceptCodes['PreHypertension'];
+  else return conceptCodes['Normotension'];
 }
 
 async function calcBpControl(age, systolic, diastolic) {
@@ -22,17 +20,15 @@ async function calcBpControl(age, systolic, diastolic) {
   let targetSBP;
 
   if (age < 65) {
-    targetSBP = sbp >= 120 && sbp <= 129;
+    targetSBP = sbp >= 60 && sbp <= 129;
   } else {
-    targetSBP = sbp >= 130 && sbp <= 139;
+    targetSBP = sbp >= 100 && sbp <= 139;
   }
 
-  const targetDBP = dbp < 80 && dbp >= 70;
-
-  if (targetSBP && targetDBP) {
-    return 'd39019f3-840c-4a53-b715-de302a8c3e63'; //control
+  if (targetSBP) {
+    return conceptCodes['BloodPressureControl'];
   } else {
-    return '3f5b99b3-6727-435d-b450-d8c679fbea6b'; // un
+    return conceptCodes['PoorHypertensionControl'];
   }
 }
 
@@ -114,20 +110,23 @@ function calcFootCare(
   DorsalisPedisPosteriorTibialPulses,
 ) {
   if (Featuresofactivediabeticfootdisease === '1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-    return 'Active diabetic foot disease';
+    return '142452AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 
   if (Amputation === '1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' || Dialysis === '1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-    return 'High risk';
+    return '166674AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 
   let moderateScore = 0;
   if (deformity === '1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA') moderateScore = moderateScore + 1;
-  if (Reflexes === '1116AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA') moderateScore = moderateScore + 1;
-  if (SensationUsingMonofilament === '1116AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA') moderateScore = moderateScore + 1;
+  if (
+    Reflexes === '1116AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' ||
+    SensationUsingMonofilament === '1116AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+  )
+    moderateScore = moderateScore + 1;
   if (DorsalisPedisPosteriorTibialPulses === '1116AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA') moderateScore = moderateScore + 1;
 
-  if (moderateScore >= 2) return 'High risk';
-  else if (moderateScore > 0) return 'Moderate risk';
-  else return 'Low risk';
+  if (moderateScore >= 2) return '166674AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+  else if (moderateScore > 0) return 'd29f46f5-6511-5b4a-86b0-997cdc995045';
+  else return '166675AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 }
 
 function getRange(value, ranges) {
@@ -191,11 +190,11 @@ async function calcPhq9(param1, param2, param3, param4, param5, param6, param7, 
 
 async function calcPhq9Grade(param1, param2, param3, param4, param5, param6, param7, param8, param9, tee) {
   const score = await calcPhq9(param1, param2, param3, param4, param5, param6, param7, param8, param9);
-  if (score < 5) return '1dc89a9b-76d6-40b7-b398-2b6355edba92';
-  else if (score < 10) return '1498AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-  else if (score < 15) return '1499AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-  else if (score < 20) return 'e00d166a-5d05-49eb-8882-6ef9043df4b3';
-  else if (score < 28) return '1500AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+  if (score <= 4) return conceptCodes['MinimalDepression'];
+  else if (score <= 9) return conceptCodes['MildDepression'];
+  else if (score <= 14) return conceptCodes['MildToModerateDepression'];
+  else if (score <= 19) return conceptCodes['ModeratelySevereDepression'];
+  else return conceptCodes['SevereDepression'];
 }
 
 async function getTest(value) {
