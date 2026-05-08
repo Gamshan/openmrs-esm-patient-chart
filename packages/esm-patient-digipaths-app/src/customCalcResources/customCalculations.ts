@@ -117,11 +117,8 @@ function calcFootCare(
 
   let moderateScore = 0;
   if (deformity === '1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA') moderateScore = moderateScore + 1;
-  if (
-    Reflexes === '1116AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' ||
-    SensationUsingMonofilament === '1116AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
-  )
-    moderateScore = moderateScore + 1;
+  if (Reflexes === '1116AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA') moderateScore = moderateScore + 1;
+  if (SensationUsingMonofilament === '1116AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA') moderateScore = moderateScore + 1;
   if (DorsalisPedisPosteriorTibialPulses === '1116AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA') moderateScore = moderateScore + 1;
 
   if (moderateScore >= 2) return '166674AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
@@ -190,10 +187,10 @@ async function calcPhq9(param1, param2, param3, param4, param5, param6, param7, 
 
 async function calcPhq9Grade(param1, param2, param3, param4, param5, param6, param7, param8, param9, tee) {
   const score = await calcPhq9(param1, param2, param3, param4, param5, param6, param7, param8, param9);
-  if (score <= 4) return conceptCodes['MinimalDepression'];
-  else if (score <= 9) return conceptCodes['MildDepression'];
-  else if (score <= 14) return conceptCodes['MildToModerateDepression'];
-  else if (score <= 19) return conceptCodes['ModeratelySevereDepression'];
+  if (score < 5) return conceptCodes['MinimalDepression'];
+  else if (score < 10) return conceptCodes['MildDepression'];
+  else if (score < 15) return conceptCodes['MildToModerateDepression'];
+  else if (score < 20) return conceptCodes['ModeratelySevereDepression'];
   else return conceptCodes['SevereDepression'];
 }
 
@@ -482,6 +479,50 @@ function isOneYearAgo(date: string) {
   return todayDate - oldDate > oneYear;
 }
 
+function calcSuicideRisk(
+  gender,
+  ageRisk,
+  depression,
+  previousSuicideAttempts,
+  severealcoholusedisorder,
+  lossRationalThinking,
+  civilStatus,
+  organisedPlan,
+  lacksocialsupport,
+  sicknessMLTCs,
+) {
+  let score = 0;
+
+  if (gender === 'M') score = score + 1;
+
+  if (ageRisk === conceptCodes['Yes']) score = score + 1;
+
+  if (depression === conceptCodes['Yes']) score = score + 1;
+
+  if (previousSuicideAttempts === conceptCodes['Yes']) score = score + 1;
+
+  if (severealcoholusedisorder === conceptCodes['Yes']) score = score + 1;
+
+  if (lossRationalThinking === conceptCodes['Yes']) score = score + 1;
+
+  if (
+    civilStatus === conceptCodes['Separated'] ||
+    civilStatus === conceptCodes['NeverMarried'] ||
+    civilStatus === conceptCodes['Widowed']
+  )
+    score = score + 1;
+
+  if (organisedPlan === conceptCodes['Yes']) score = score + 1;
+
+  if (lacksocialsupport === conceptCodes['Yes']) score = score + 1;
+
+  if (sicknessMLTCs === conceptCodes['Yes']) score = score + 1;
+
+  if (score <= 4) return conceptCodes['LowRisk'];
+  else if (score <= 6) return conceptCodes['MediumRisk'];
+  else return conceptCodes['HighRisk'];
+}
+
 export {
   calcHtnGrade,
   calcBpControl,
@@ -499,4 +540,5 @@ export {
   calcTest,
   calcSouthEastAsiaLabCVDRisk,
   calcSouthEastAsiaCVDRisk,
+  calcSuicideRisk,
 };
