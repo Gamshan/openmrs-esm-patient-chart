@@ -12,11 +12,11 @@ async function calcHtnGrade(systolic, diastolic) {
   let sbp = await systolic;
   let dbp = await diastolic;
 
-  if (sbp >= 180 || dbp >= 110) return conceptCodes['Severe'];
+  if (sbp < 60 || dbp < 40) return conceptCodes['LowBP'];
+  else if (sbp >= 180 || dbp >= 110) return conceptCodes['Severe'];
   else if (sbp >= 160 || dbp >= 100) return conceptCodes['Moderate'];
   else if (sbp >= 140 || dbp >= 90) return conceptCodes['Mild'];
   else if ((sbp >= 120 && sbp <= 139) || (dbp >= 80 && dbp <= 89)) return conceptCodes['PreHypertension'];
-  if (sbp < 60 || dbp < 40) return conceptCodes['LowBP'];
   else return conceptCodes['Normotension'];
 }
 
@@ -30,9 +30,8 @@ async function calcBpControl(age, systolic, diastolic) {
   } else {
     targetSBP = sbp >= 100 && sbp <= 139;
   }
-  const targetDBP = dbp < 80 && dbp >= 70;
 
-  if (targetSBP && targetDBP) {
+  if (targetSBP) {
     return conceptCodes['BloodPressureControl'];
   } else {
     return conceptCodes['PoorHypertensionControl'];
