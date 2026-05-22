@@ -2,6 +2,12 @@ import { getCondition } from './data.resource';
 import data from './who-south-asia-cvd.json';
 import { southEastAsiaCvdRiskTables, southEastAsiaCvdRiskTablesLaboratory } from './risk-dataset-table';
 import { conceptCodes } from './concept-codes';
+
+function convertCholMgdlToMmol(chol) {
+  if (chol == null) return null;
+  return parseFloat((chol / 38.67).toFixed(2));
+}
+
 async function calcHtnGrade(systolic, diastolic) {
   let sbp = await systolic;
   let dbp = await diastolic;
@@ -340,10 +346,11 @@ function getSBPIndex(sbp) {
 }
 
 function getCholIndex(chol) {
-  if (chol < 4) return 0;
-  if (chol < 5) return 1;
-  if (chol < 6) return 2;
-  if (chol < 7) return 3;
+  const cholMmol = convertCholMgdlToMmol(chol); // ← convert
+  if (cholMmol < 4) return 0;
+  if (cholMmol < 5) return 1;
+  if (cholMmol < 6) return 2;
+  if (cholMmol < 7) return 3;
   return 4;
 }
 
