@@ -27,6 +27,7 @@ import {
   calcTest,
   calcUACR_Category,
   calcSuicideRisk,
+  calcDiabetesStatus,
 } from './customCalcResources/customCalculations';
 
 const moduleName = '@openmrs/esm-patient-digipaths-app';
@@ -67,6 +68,7 @@ export function startupApp() {
   registerExpressionHelper('calcSouthEastAsiaLabCVDRisk', calcSouthEastAsiaLabCVDRisk);
   registerExpressionHelper('calcSouthEastAsiaCVDRisk', calcSouthEastAsiaCVDRisk);
   registerExpressionHelper('calcSuicideRisk', calcSuicideRisk);
+  registerExpressionHelper('calcDiabetesStatus', calcDiabetesStatus);
 }
 
 export const digipaths = getSyncLifecycle(digipathsOverviewComponent, options);

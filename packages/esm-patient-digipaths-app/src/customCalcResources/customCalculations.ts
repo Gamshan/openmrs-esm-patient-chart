@@ -487,6 +487,12 @@ function isOneYearAgo(date: string) {
   return todayDate - oldDate > oneYear;
 }
 
+async function calcDiabetesStatus(patientId) {
+  const conditionData = await getCondition(patientId, '119481AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
+  let isActiveDiabetes = conditionData && conditionData.total > 0 ? 1 : 0;
+  return isActiveDiabetes ? 'Yes' : 'No';
+}
+
 function calcSuicideRisk(
   gender,
   ageRisk,
@@ -549,4 +555,5 @@ export {
   calcSouthEastAsiaLabCVDRisk,
   calcSouthEastAsiaCVDRisk,
   calcSuicideRisk,
+  calcDiabetesStatus,
 };
