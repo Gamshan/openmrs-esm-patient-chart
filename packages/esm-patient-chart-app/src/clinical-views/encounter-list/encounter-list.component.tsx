@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { Button, Link, OverflowMenu, OverflowMenuItem, DataTableSkeleton, Pagination } from '@carbon/react';
-import { AddIcon, navigate, showModal, showSnackbar, useConfig, type Visit } from '@openmrs/esm-framework';
+import { AddIcon, navigate, showModal, showSnackbar, useConfig, usePatient, type Visit } from '@openmrs/esm-framework';
 import { EmptyState } from '@openmrs/esm-patient-common-lib';
 import { EncounterListDataTable } from './table.component';
 import { type LaunchAction, launchEncounterForm } from '../utils/helpers';
@@ -36,6 +36,8 @@ export interface EncounterListProps {
   visit: Visit;
 }
 
+const femaleOnlyColumnKeys = ['contraceptive', 'pregnancy', 'planningpregnant'];
+
 export const EncounterList: React.FC<EncounterListProps> = ({
   patientUuid,
   encounterType,
@@ -51,6 +53,16 @@ export const EncounterList: React.FC<EncounterListProps> = ({
 }) => {
   const { t } = useTranslation();
   const { requireActiveVisitForEncounterTile } = useConfig<Pick<ChartConfig, 'requireActiveVisitForEncounterTile'>>();
+
+  const { patient } = usePatient(patientUuid);
+  const isMale = patient?.gender === 'male';
+
+  const visibleColumns = useMemo(() => {
+    if (isMale) {
+      return columns.filter((column) => !femaleOnlyColumnKeys.includes(column.key));
+    }
+    return columns;
+  }, [columns, isMale]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -152,7 +164,7 @@ export const EncounterList: React.FC<EncounterListProps> = ({
         viewEncounter: createLaunchFormAction(encounter, 'view'),
       };
 
-      columns.forEach((column) => {
+      visibleColumns.forEach((column) => {
         let val = column?.getValue(encounter);
         if (column.link) {
           val = (
@@ -214,7 +226,7 @@ export const EncounterList: React.FC<EncounterListProps> = ({
   }, [
     encounters,
     createLaunchFormAction,
-    columns,
+    visibleColumns,
     defaultActions,
     formsJson,
     t,
@@ -224,13 +236,13 @@ export const EncounterList: React.FC<EncounterListProps> = ({
   ]);
 
   const headers = useMemo(() => {
-    if (columns) {
-      return columns.map((column) => {
+    if (visibleColumns) {
+      return visibleColumns.map((column) => {
         return { key: column.key, header: t(column.header) };
       });
     }
     return [];
-  }, [columns, t]);
+  }, [visibleColumns, t]);
 
   const formLauncher = useMemo(() => {
     if (formsJson) {
