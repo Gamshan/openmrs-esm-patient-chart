@@ -15,7 +15,7 @@ async function calcHtnGrade(systolic, diastolic) {
   if (sbp >= 180 || dbp >= 110) return conceptCodes['Severe'];
   else if (sbp >= 160 || dbp >= 100) return conceptCodes['Moderate'];
   else if (sbp >= 140 || dbp >= 90) return conceptCodes['Mild'];
-  else if ((sbp >= 120 && sbp <= 139) || (dbp >= 80 && dbp <= 89)) return conceptCodes['PreHypertension'];
+  else if (sbp >= 120 || dbp >= 81) return conceptCodes['PreHypertension'];
   if (sbp < 60 || dbp < 40) return conceptCodes['LowBP'];
   else return conceptCodes['Normotension'];
 }
@@ -23,20 +23,18 @@ async function calcHtnGrade(systolic, diastolic) {
 async function calcBpControl(age, systolic, diastolic) {
   let sbp = await systolic;
   let dbp = await diastolic;
-  let targetSBP;
+  let isControlSBP: boolean;
+  let isControlDBP: boolean;
 
   if (age < 65) {
-    targetSBP = sbp >= 60 && sbp <= 129;
+    isControlSBP = sbp >= 60 && sbp <= 129;
+    isControlDBP = dbp >= 40 && dbp <= 89;
   } else {
-    targetSBP = sbp >= 100 && sbp <= 139;
+    isControlSBP = sbp >= 100 && sbp <= 139;
+    isControlDBP = dbp >= 70 && dbp <= 89;
   }
-  const targetDBP = dbp < 80 && dbp >= 70;
 
-  if (targetSBP && targetDBP) {
-    return conceptCodes['BloodPressureControl'];
-  } else {
-    return conceptCodes['PoorHypertensionControl'];
-  }
+  return isControlSBP && isControlDBP ? conceptCodes['BloodPressureControl'] : conceptCodes['PoorHypertensionControl'];
 }
 
 async function customCalculator(condition) {
@@ -312,7 +310,7 @@ async function calcSouthEastAsiaNonLabCVDRiskScore(
     typeof bmi === 'number';
 
   if (!hasValidValues) {
-    return null;
+    return 0;
   }
   // Bin functions
   const getAgeBin = (age) => Math.floor((Math.min(Math.max(age, 40), 74) - 40) / 5);
@@ -419,7 +417,7 @@ async function calcSouthEastAsiaLabCVDRiskScore(
     typeof chol === 'number';
 
   if (!hasValidValues) {
-    return null;
+    return 0;
   }
   //
   // // Bin functions
@@ -462,7 +460,9 @@ async function calcSouthEastAsiaCVDRiskScore(
 
   if (chol && chol.valueQuantity && chol.valueQuantity.value && chol.issued && !isOneYearAgo(chol.issued)) {
     return await calcSouthEastAsiaLabCVDRiskScore(patientId, sex, smoker, age, sbpPromise, chol.valueQuantity.value);
-  } else return await calcSouthEastAsiaNonLabCVDRiskScore(sex, smoker, age, sbpPromise, bmiPromise);
+  } else return 0;
+
+  // else return await calcSouthEastAsiaNonLabCVDRiskScore(sex, smoker, age, sbpPromise, bmiPromise);
 }
 
 async function calcSouthEastAsiaCVDRisk(
