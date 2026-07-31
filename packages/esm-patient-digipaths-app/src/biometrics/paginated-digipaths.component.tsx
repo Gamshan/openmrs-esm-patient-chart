@@ -1,14 +1,16 @@
 import React, { useMemo, useState } from 'react';
 import {
   DataTable,
-  type DataTableRow,
   Table,
+  TableBody,
   TableCell,
   TableContainer,
-  TableBody,
   TableHead,
   TableHeader,
-  TableRow, type DataTableSortState,
+  TableRow,
+  TableExpandRow,
+  TableExpandedRow,
+  TableExpandHeader,
 } from '@carbon/react';
 import { useLayoutType, usePagination } from '@openmrs/esm-framework';
 import { PatientChartPagination } from '@openmrs/esm-patient-common-lib';
@@ -37,81 +39,84 @@ const PaginatedDigipaths: React.FC<PaginatedDigipathsProps> = ({
     sortDirection: 'NONE',
   });
 
-  const handleSorting = (
-    cellA: any,
-    cellB: any,
-    { key, sortDirection }: { key: string; sortDirection: DataTableSortState },
-  ) => {
-    if (sortDirection === 'NONE') {
-      setSortParams({ key: '', sortDirection });
-    } else {
-      setSortParams({ key, sortDirection });
-    }
-    return 0;
-  };
+  const sortedData = useMemo(() => {
+    if (sortParams.sortDirection === 'NONE' || !sortParams.key) return tableRows;
 
+    const header = tableHeaders.find((h) => h.key === sortParams.key);
+    if (!header) return tableRows;
 
-  const sortedData: Array<DigipathsTableRow> = useMemo(() => {
-    if (sortParams.sortDirection === 'NONE') {
-      return tableRows;
-    }
-
-    const header = tableHeaders.find((header) => header.key === sortParams.key);
-
-    if (!header) {
-      return tableRows;
-    }
-
-    const sortedRows = tableRows.slice().sort((rowA, rowB) => {
-      const sortingNum = header.sortFunc(rowA, rowB);
-      return sortParams.sortDirection === 'DESC' ? sortingNum : -sortingNum;
+    return [...tableRows].sort((a, b) => {
+      const sortResult = header.sortFunc(a, b);
+      return sortParams.sortDirection === 'DESC' ? sortResult : -sortResult;
     });
-
-    return sortedRows;
   }, [tableRows, tableHeaders, sortParams]);
 
   const { results: paginatedBiometrics, goTo, currentPage } = usePagination(sortedData, pageSize);
 
+  const onHeaderClick = (headerKey: string) => {
+    setSortParams((prev) => {
+      if (prev.key === headerKey) {
+        if (prev.sortDirection === 'ASC') return { key: headerKey, sortDirection: 'DESC' };
+        if (prev.sortDirection === 'DESC') return { key: '', sortDirection: 'NONE' };
+      }
+      return { key: headerKey, sortDirection: 'ASC' };
+    });
+  };
+
   return (
     <>
-      <DataTable
-        headers={tableHeaders}
-        isSortable
-        overflowMenuOnHover={!isTablet}
-        rows={paginatedBiometrics}
-        size={isTablet ? 'lg' : 'sm'}
-        sortRow={handleSorting}
-        useZebraStyles
-      >
-        {({ rows, headers, getHeaderProps, getTableProps }) => (
+      <DataTable headers={tableHeaders} rows={paginatedBiometrics} size={isTablet ? 'lg' : 'sm'} useZebraStyles>
+        {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
           <TableContainer className={styles.tableContainer}>
-            <Table aria-label="Digipaths" className={styles.table} {...getTableProps()}>
+            <Table {...getTableProps()} className={styles.table}>
               <TableHead>
                 <TableRow>
-                  {headers.map((header) => (
-                    <TableHeader
-                      {...getHeaderProps({
-                        header,
-                      })}
-                    >
-                      {header.header}
-                    </TableHeader>
-                  ))}
+                  <TableExpandHeader />
+                  {headers
+                    .filter((header) => header.key !== 'recommendationRender')
+                    .map((header) => (
+                      <TableHeader
+                        key={header.key}
+                        {...getHeaderProps({ header })}
+                        onClick={() => onHeaderClick(header.key)}
+                        style={{ cursor: 'pointer', userSelect: 'none' }}
+                      >
+                        {header.header}
+                        {sortParams.key === header.key && sortParams.sortDirection !== 'NONE' && (
+                          <span>{sortParams.sortDirection === 'ASC' ? ' 🔼' : ' 🔽'}</span>
+                        )}
+                      </TableHeader>
+                    ))}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.cells.map((cell) => (
-                      <TableCell key={cell.id}>{cell.value?.content ?? cell.value}</TableCell>
-                    ))}
-                  </TableRow>
+                  <React.Fragment key={row.id}>
+                    <TableExpandRow {...getRowProps({ row })}>
+                      {row.cells
+                        .filter((cell, index) => headers[index]?.key !== 'recommendationRender')
+                        .map((cell) => (
+                          <TableCell key={cell.id}>{cell.value?.content ?? cell.value ?? 'N/A'}</TableCell>
+                        ))}
+                    </TableExpandRow>
+                    <TableExpandedRow colSpan={headers.length + 1}>
+                      <div style={{ padding: '0.5rem 1rem', backgroundColor: '#f4f4f4' }}>
+                        <div style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>Recommendation:</div>
+                        {(() => {
+                          const recommendationIndex = headers.findIndex((h) => h.key === 'recommendationRender');
+                          const recCell = row.cells[recommendationIndex];
+                          return recCell ? <div dangerouslySetInnerHTML={{ __html: recCell.value ?? 'N/A' }} /> : 'N/A';
+                        })()}
+                      </div>
+                    </TableExpandedRow>
+                  </React.Fragment>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
         )}
       </DataTable>
+
       <PatientChartPagination
         pageNumber={currentPage}
         totalItems={tableRows.length}

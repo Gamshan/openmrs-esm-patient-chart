@@ -7,3 +7,15 @@
     border-bottom: none !important;
   }
 }
+
+sub {
+  vertical-align: sub;
+  font-size: 0.75rem; /* Adjust based on Carbon's type tokens */
+  line-height: 0;
+}
+
+sup {
+  vertical-align: super;
+  font-size: 0.75rem; /* same scaling as sub */
+  line-height: 0;
+}

@@ -5,7 +5,7 @@ import { BiometricsAndVitalsPage } from '../pages';
 test('Add, edit and delete patient vitals', async ({ page, patient }) => {
   const vitalsPage = new BiometricsAndVitalsPage(page);
   const headerRow = vitalsPage.vitalsTable().locator('thead > tr');
-  const dataRow = vitalsPage.vitalsTable().locator('tbody > tr');
+  const dataRow = vitalsPage.vitalsTable().locator('tbody > tr').first();
 
   await test.step('When I visit the vitals and biometrics page', async () => {
     await vitalsPage.goTo(patient.uuid);
@@ -69,10 +69,7 @@ test('Add, edit and delete patient vitals', async ({ page, patient }) => {
   });
 
   await test.step('When I click the overflow menu on the vitals row', async () => {
-    await vitalsPage.page
-      .getByRole('button', { name: /options/i })
-      .nth(0)
-      .click();
+    await dataRow.getByRole('button', { name: /options/i }).click();
   });
 
   await test.step('And I click on the `Edit` button', async () => {
@@ -126,10 +123,7 @@ test('Add, edit and delete patient vitals', async ({ page, patient }) => {
   });
 
   await test.step('When I click the overflow menu on the vitals row', async () => {
-    await vitalsPage.page
-      .getByRole('button', { name: /options/i })
-      .nth(0)
-      .click();
+    await dataRow.getByRole('button', { name: /options/i }).click();
   });
 
   await test.step('And I click on the `Delete` button', async () => {
@@ -149,7 +143,7 @@ test('Add, edit and delete patient vitals', async ({ page, patient }) => {
 test('Add low and critically low range patient vitals', async ({ page, patient }) => {
   const vitalsPage = new BiometricsAndVitalsPage(page);
   const headerRow = vitalsPage.vitalsTable().locator('thead > tr');
-  const dataRow = vitalsPage.vitalsTable().locator('tbody > tr');
+  const dataRow = vitalsPage.vitalsTable().locator('tbody > tr').first();
 
   await test.step('When I visit the vitals and biometrics page', async () => {
     await vitalsPage.goTo(patient.uuid);
@@ -235,7 +229,7 @@ test('Add low and critically low range patient vitals', async ({ page, patient }
 test('Add high and critically high range patient vitals', async ({ page, patient }) => {
   const vitalsPage = new BiometricsAndVitalsPage(page);
   const headerRow = vitalsPage.vitalsTable().locator('thead > tr');
-  const dataRow = vitalsPage.vitalsTable().locator('tbody > tr');
+  const dataRow = vitalsPage.vitalsTable().locator('tbody > tr').first();
 
   await test.step('When I visit the vitals and biometrics page', async () => {
     await vitalsPage.goTo(patient.uuid);
