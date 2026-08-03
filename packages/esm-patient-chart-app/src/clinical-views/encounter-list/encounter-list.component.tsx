@@ -57,12 +57,35 @@ export const EncounterList: React.FC<EncounterListProps> = ({
   const { patient } = usePatient(patientUuid);
   const isMale = patient?.gender === 'male';
 
-  const visibleColumns = useMemo(() => {
+  const patientAge = useMemo(() => {
+    if (!patient?.birthDate) {
+      return null;
+    }
+    const birthDate = new Date(patient.birthDate);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const hasHadBirthdayThisYear =
+      today.getMonth() > birthDate.getMonth() ||
+      (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
+    if (!hasHadBirthdayThisYear) {
+      age -= 1;
+    }
+    return age;
+  }, [patient?.birthDate]);
+
+  const shouldHideReproductiveColumns = useMemo(() => {
     if (isMale) {
+      return true;
+    }
+    return patientAge != null && patientAge > 50;
+  }, [isMale, patientAge]);
+
+  const visibleColumns = useMemo(() => {
+    if (shouldHideReproductiveColumns) {
       return columns.filter((column) => !femaleOnlyColumnKeys.includes(column.key));
     }
     return columns;
-  }, [columns, isMale]);
+  }, [columns, shouldHideReproductiveColumns]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
