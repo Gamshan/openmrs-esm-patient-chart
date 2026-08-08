@@ -59,6 +59,11 @@ export const markPatientDeceasedActionButton = getSyncLifecycle(markPatientDecea
   moduleName,
 });
 
+export const clinicalViewsNavGroup = getAsyncLifecycle(
+  () => import('./clinical-views/clinical-views-nav-group.component'),
+  { featureName: 'clinical-views-nav-group', moduleName },
+);
+
 export const startVisitActionButton = getSyncLifecycle(startVisitActionButtonComponent, {
   featureName: 'patient-actions-slot',
   moduleName,

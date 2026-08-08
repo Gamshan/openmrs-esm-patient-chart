@@ -7,7 +7,7 @@ export type TableHeaderType = {
 };
 
 export interface Encounter extends OpenmrsResource {
-  encounterDatetime: Date;
+  encounterDatetime: string;
   encounterType: { uuid: string; name: string };
   patient: {
     uuid: string;
@@ -25,12 +25,20 @@ export interface Encounter extends OpenmrsResource {
   form?: {
     uuid: string;
   };
-  visit?: string;
+  visit?: {
+    uuid: string;
+    startDatetime: string;
+    stopDatetime?: string;
+    visitType?: {
+      uuid: string;
+      display: string;
+    };
+  };
 }
 
 export interface Observation {
   uuid: string;
-  concept: { uuid: string; name: string };
+  concept: { uuid: string; name: string; units?: string };
   value:
     | {
         uuid: string;
@@ -139,6 +147,7 @@ export interface ColumnDefinition {
   id: string;
   title: string;
   isComplex?: boolean;
+  isColoredTag?: boolean;
   concept?: string;
   secondaryConcept?: string;
   multipleConcepts?: Array<string>;
@@ -159,6 +168,9 @@ export interface ColumnDefinition {
   encounterType: string;
   hasSummary?: boolean;
   summaryConcept?: SummaryConcept;
+  rendering?: string;
+  conditionCode?: string;
+  field?: string;
 }
 
 export interface ConditionalEncounterMapping {
@@ -181,7 +193,7 @@ export interface TabSchema {
   launchOptions: LaunchOptions;
 }
 
-export type Mode = 'edit' | 'view';
+export type Mode = 'edit' | 'view' | 'delete';
 
 export interface Action {
   label: string;
@@ -192,7 +204,7 @@ export interface Action {
 
 export interface TableRow {
   id: string;
-  actions: Action[] | ReactElement | null;
+  actions?: ReactElement;
 }
 
 export interface FormColumn {
@@ -230,23 +242,28 @@ export interface FormattedColumn {
 export interface EncounterTileColumn {
   key: string;
   header: string;
+  isColoredTag?: boolean;
+  statusColorMappings?: Record<string, string>;
   encounterTypeUuid: string;
   concept: string;
   title?: string;
   getObsValue: (encounter: Encounter) => string;
   getSummaryObsValue?: (encounter: Encounter) => string;
   encounter?: Encounter;
-  hasSummary?: Boolean;
+  hasSummary?: boolean;
+  summaryConcept?: SummaryConcept;
 }
 export interface EncounterTileProps {
   patientUuid: string;
   columns: Array<EncounterTileColumn>;
   headerTitle: string;
+  maxColumnsPerRow?: number;
 }
 
 export interface MenuCardProps {
   tileHeader: string;
   columns: Array<ColumnDefinition>;
+  maxColumnsPerRow?: number;
 }
 
 interface SummaryConcept {
@@ -254,6 +271,7 @@ interface SummaryConcept {
   secondaryConcept?: string;
   isDate?: boolean;
   hasCalculatedDate?: boolean;
+  type?: EncounterPropertyType;
 }
 
 export interface FormattedCardColumn {
@@ -273,33 +291,14 @@ export interface ConfigConcepts {
   otherConceptUuid: string;
 }
 
-export interface Encounter extends OpenmrsResource {
-  encounterDatetime: Date;
-  encounterType: { uuid: string; name: string };
-  patient: {
-    uuid: string;
-    display: string;
-    age: number;
-    birthDate: string;
-  };
-  location: {
-    uuid: string;
-    display: string;
-    name: string;
-  };
-  encounterProviders?: Array<{ encounterRole: string; provider: { uuid: string; name: string } }>;
-  obs: Array<Observation>;
-  form?: {
-    uuid: string;
-  };
-  visit?: string;
-}
-
 export enum EncounterPropertyType {
   location = 'location',
   provider = 'provider',
+  encounterType = 'encounterType',
   visitType = 'visitType',
   ageAtEncounter = 'ageAtEncounter',
+  visitDate = 'visitDate',
+  encounterDatetime = 'encounterDatetime',
 }
 
 export interface GetObsFromEncounterParams {

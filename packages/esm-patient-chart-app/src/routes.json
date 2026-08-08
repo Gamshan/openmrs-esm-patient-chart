@@ -24,6 +24,13 @@
       "offline": true
     },
     {
+      "name": "clinical-views-nav-group",
+      "component": "clinicalViewsNavGroup",
+      "slot": "patient-chart-dashboard-slot",
+      "online": true,
+      "offline": true
+    },
+    {
       "name": "encounter-list",
       "component": "encounterListTableTabs",
       "online": true,

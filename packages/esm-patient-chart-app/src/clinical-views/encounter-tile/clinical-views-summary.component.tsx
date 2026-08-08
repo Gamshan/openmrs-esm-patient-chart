@@ -25,13 +25,20 @@ const ClinicalViewsSummary: React.FC<OverviewListProps> = memo(({ patientUuid })
     return tileDefinitions?.map((tile: MenuCardProps) => ({
       title: t(tile.tileHeader),
       columns: getEncounterTileColumns(tile, configConcepts),
+      maxColumnsPerRow: tile.maxColumnsPerRow,
     }));
   }, [tileDefinitions, t, trueConceptUuid, falseConceptUuid, otherConceptUuid]);
 
   return tilesData?.length > 0 ? (
     <>
       {tilesData.map((tile, index) => (
-        <EncounterTile key={index} patientUuid={patientUuid} columns={tile.columns} headerTitle={tile.title} />
+        <EncounterTile
+          key={index}
+          patientUuid={patientUuid}
+          columns={tile.columns}
+          headerTitle={tile.title}
+          maxColumnsPerRow={tile.maxColumnsPerRow}
+        />
       ))}
     </>
   ) : null;
