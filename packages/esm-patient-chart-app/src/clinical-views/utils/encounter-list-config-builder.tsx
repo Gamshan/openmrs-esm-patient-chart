@@ -41,10 +41,10 @@ const getColumnValue = (
     return (
       <ConditionColumnRenderer
         patientUuid={encounter.patient?.uuid}
-        conditionCode={column.conditionCode}
-        field={column.field}
-      />
-    );
+    conditionCode={column.conditionCode}
+    field={column.field}
+    />
+  );
   }
 
   if (column.statusColorMappings) {
@@ -141,9 +141,9 @@ export const getTabColumns = (columnsDefinition: Array<ColumnDefinition>, config
     getValue: (encounter) => getColumnValue(encounter, column, config, t),
     link: column.isLink
       ? {
-          getUrl: (encounter) => encounter.url,
-          handleNavigate: (encounter) => encounter.launchFormActions?.viewEncounter(),
-        }
+        getUrl: (encounter) => encounter.url,
+        handleNavigate: (encounter) => encounter.launchFormActions?.viewEncounter(),
+      }
       : null,
   }));
 

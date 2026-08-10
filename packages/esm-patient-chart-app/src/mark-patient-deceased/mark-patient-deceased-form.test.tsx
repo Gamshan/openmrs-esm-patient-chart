@@ -1,4 +1,5 @@
 import React from 'react';
+import { vi, describe, it, expect, beforeEach, afterAll } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
 import { getDefaultsFromConfigSchema, showSnackbar, useConfig } from '@openmrs/esm-framework';
@@ -6,32 +7,37 @@ import { esmPatientChartSchema, type ChartConfig } from '../config-schema';
 import { mockPatient } from 'tools';
 import { markPatientDeceased, useCausesOfDeath } from '../data.resource';
 import MarkPatientDeceasedForm from './mark-patient-deceased-form.workspace';
+import { type PatientWorkspace2DefinitionProps } from '@openmrs/esm-patient-common-lib/src';
 
-const originalLocation = window.location;
-delete window.location;
-window.location = { ...originalLocation, reload: jest.fn() };
+const mockMarkPatientDeceased = vi.mocked(markPatientDeceased);
+const mockUseCausesOfDeath = vi.mocked(useCausesOfDeath);
+const mockUseConfig = vi.mocked(useConfig<ChartConfig>);
+const mockShowSnackbar = vi.mocked(showSnackbar);
+const mockCloseWorkspace = vi.fn();
 
-const mockMarkPatientDeceased = jest.mocked(markPatientDeceased);
-const mockUseCausesOfDeath = jest.mocked(useCausesOfDeath);
-const mockUseConfig = jest.mocked(useConfig<ChartConfig>);
-const mockShowSnackbar = jest.mocked(showSnackbar);
-const mockCloseWorkspace = jest.fn();
-
-jest.mock('../data.resource.ts', () => ({
-  markPatientDeceased: jest.fn().mockResolvedValue({}),
-  useCausesOfDeath: jest.fn(),
+vi.mock('../data.resource', () => ({
+  markPatientDeceased: vi.fn().mockResolvedValue({}),
+  useCausesOfDeath: vi.fn(),
 }));
 
 describe('MarkPatientDeceasedForm', () => {
   const freeTextFieldConceptUuid = '1234e218-6c8a-4ca3-8edb-9f6d9c8c8c7f';
 
-  const defaultProps = {
-    patientUuid: mockPatient.id,
-    patient: mockPatient,
+  const defaultProps: PatientWorkspace2DefinitionProps<{}, {}> = {
     closeWorkspace: mockCloseWorkspace,
-    closeWorkspaceWithSavedChanges: jest.fn(),
-    promptBeforeClosing: jest.fn(),
-    setTitle: jest.fn(),
+    workspaceName: null,
+    launchChildWorkspace: vi.fn(),
+    windowProps: {},
+    workspaceProps: {},
+    groupProps: {
+      patientUuid: mockPatient.id,
+      patient: mockPatient,
+      visitContext: null,
+      mutateVisitContext: null,
+    },
+    windowName: '',
+    isRootWorkspace: false,
+    showActionMenu: true,
   };
 
   const codedCausesOfDeath = [
@@ -71,7 +77,7 @@ describe('MarkPatientDeceasedForm', () => {
   });
 
   afterAll(() => {
-    window.location = originalLocation;
+    vi.restoreAllMocks();
   });
 
   it('renders the cause of death form', () => {
@@ -79,7 +85,7 @@ describe('MarkPatientDeceasedForm', () => {
 
     expect(screen.getByRole('img', { name: /warning/i })).toBeInTheDocument();
     expect(
-      screen.getByText(/marking the patient as deceased will end any active visits for this patient/i),
+      screen.getByText(/marking the patient as deceased updates this patient's death information/i),
     ).toBeInTheDocument();
     const causes = screen.getAllByText(/cause of death/i);
     expect(causes.length).toBeGreaterThan(0);
@@ -112,7 +118,7 @@ describe('MarkPatientDeceasedForm', () => {
   });
 
   it('selecting "Other" as the cause of death requires the user to enter a non-coded cause of death', async () => {
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
     const user = userEvent.setup();
 
     render(<MarkPatientDeceasedForm {...defaultProps} />);
@@ -155,10 +161,13 @@ describe('MarkPatientDeceasedForm', () => {
       '8b64f45e-1d5f-4894-b77c-4e1d840e2c99', // causeOfDeathUuid for Traumatic injury,
       '',
     );
+    expect(mockShowSnackbar).toHaveBeenCalledWith({
+      title: 'Patient marked deceased successfully',
+    });
   });
 
   it('renders an error message when saving the cause of death fails', async () => {
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
     const user = userEvent.setup();
     const mockError = new Error('API Error');
 

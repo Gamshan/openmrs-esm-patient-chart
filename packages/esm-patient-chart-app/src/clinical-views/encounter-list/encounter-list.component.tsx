@@ -2,16 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { Button, Link, OverflowMenu, OverflowMenuItem, DataTableSkeleton, Pagination } from '@carbon/react';
-import {
-  AddIcon,
-  navigate,
-  NumericObservation,
-  showModal,
-  showSnackbar,
-  useConfig,
-  usePatient,
-  type Visit,
-} from '@openmrs/esm-framework';
+import { AddIcon, navigate,  NumericObservation, showModal, showSnackbar, useConfig, usePatient, type Visit, } from '@openmrs/esm-framework';
 import { EmptyState } from '@openmrs/esm-patient-common-lib';
 import { EncounterListDataTable } from './table.component';
 import { type LaunchAction, launchEncounterForm } from '../utils/helpers';

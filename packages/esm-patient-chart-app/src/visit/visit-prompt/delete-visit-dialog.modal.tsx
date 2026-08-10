@@ -2,16 +2,15 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalHeader, ModalBody, ModalFooter, InlineLoading } from '@carbon/react';
 import { type Visit } from '@openmrs/esm-framework';
-import { useDeleteVisit } from '../hooks/useDeleteVisit.hook';
+import { useDeleteVisit } from '../hooks/useDeleteVisit';
 import styles from './start-visit-dialog.scss';
 
 interface DeleteVisitDialogProps {
   closeModal: () => void;
-  patientUuid: string;
   visit: Visit;
 }
 
-const DeleteVisitDialog: React.FC<DeleteVisitDialogProps> = ({ closeModal, patientUuid, visit }) => {
+const DeleteVisitDialog: React.FC<DeleteVisitDialogProps> = ({ closeModal, visit }) => {
   const { t } = useTranslation();
   const { isDeletingVisit, initiateDeletingVisit } = useDeleteVisit(visit, closeModal);
 

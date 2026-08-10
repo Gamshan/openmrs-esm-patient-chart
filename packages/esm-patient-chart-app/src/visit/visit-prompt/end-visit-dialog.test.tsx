@@ -1,19 +1,45 @@
+/**
+ * @vitest-environment jsdom
+ *
+ * happy-dom's `Date` and `AbortController` instances do not satisfy
+ * `instanceof` against the host realm's constructors, which breaks
+ * `expect.any(Date)` and `toHaveBeenCalledWith(new AbortController(), ...)`
+ * matchers used here. Run under jsdom (which shares the host realm's globals).
+ */
 import React from 'react';
+import { vi, describe, expect, test, beforeEach } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { screen, render } from '@testing-library/react';
 import { showSnackbar, updateVisit, useVisit, type Visit, type FetchResponse } from '@openmrs/esm-framework';
 import { mockCurrentVisit } from '__mocks__';
-import EndVisitDialog from './end-visit-dialog.component';
+import EndVisitDialog from './end-visit-dialog.modal';
+import { usePatientChartStore } from '@openmrs/esm-patient-common-lib';
 
 const endVisitPayload = {
   stopDatetime: expect.any(Date),
 };
 
-const mockCloseModal = jest.fn();
-const mockMutate = jest.fn();
-const mockShowSnackbar = jest.mocked(showSnackbar);
-const mockUseVisit = jest.mocked(useVisit);
-const mockUpdateVisit = jest.mocked(updateVisit);
+const mockCloseModal = vi.fn();
+const mockMutate = vi.fn();
+const mockShowSnackbar = vi.mocked(showSnackbar);
+const mockUseVisit = vi.mocked(useVisit);
+const mockUpdateVisit = vi.mocked(updateVisit);
+
+const mockUsePatientChartStore = vi.mocked(usePatientChartStore);
+const mockSetVisitContext = vi.fn();
+
+vi.mock('@openmrs/esm-patient-common-lib', () => ({
+  usePatientChartStore: vi.fn(),
+}));
+
+mockUsePatientChartStore.mockReturnValue({
+  patientUuid: 'patient-123',
+  patient: null,
+  visitContext: mockCurrentVisit,
+  mutateVisitContext: vi.fn(),
+  setPatient: vi.fn(),
+  setVisitContext: mockSetVisitContext,
+});
 
 describe('End visit dialog', () => {
   beforeEach(() => {
@@ -66,6 +92,8 @@ describe('End visit dialog', () => {
       kind: 'success',
       title: 'Visit ended',
     });
+
+    expect(mockSetVisitContext).toHaveBeenCalledTimes(1);
   });
 
   test('displays an error snackbar if there was a problem ending a visit', async () => {

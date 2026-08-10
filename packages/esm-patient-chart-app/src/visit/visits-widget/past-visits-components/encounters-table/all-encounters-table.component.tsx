@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { useVisitContextStore, type EncounterType } from '@openmrs/esm-framework';
+import React, { useState } from 'react';
+import { userHasAccess, useSession, type EncounterType } from '@openmrs/esm-framework';
 import { type EncountersTableProps, usePaginatedEncounters } from './encounters-table.resource';
 import EncountersTable from './encounters-table.component';
 
@@ -23,8 +23,8 @@ const AllEncountersTable: React.FC<AllEncountersTableProps> = ({ patientUuid }) 
     mutate,
   } = usePaginatedEncounters(patientUuid, encounterTypeToFilter?.uuid, pageSize);
 
-  const mutateEncounters = useCallback(() => mutate(), [mutate]);
-  useVisitContextStore(mutateEncounters);
+  const session = useSession();
+  const canPrintEncounters = userHasAccess('App: Print encounter forms', session?.user);
 
   const encountersTableProps: EncountersTableProps = {
     currentPage,
@@ -39,6 +39,8 @@ const AllEncountersTable: React.FC<AllEncountersTableProps> = ({ patientUuid }) 
     showEncounterTypeFilter: true,
     showVisitType: true,
     totalCount,
+    isSelectable: false,
+    canPrintEncounters,
   };
 
   return <EncountersTable {...encountersTableProps} />;

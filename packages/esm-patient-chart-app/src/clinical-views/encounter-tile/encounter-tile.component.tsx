@@ -92,29 +92,29 @@ const EncounterData: React.FC<{
         <div className={styles.tileValue}>
           {column.isColoredTag && column.statusColorMappings && obsValue !== '--'
             ? (() => {
-                const colorValue = column.statusColorMappings[obsValue] ?? '#888888';
-                const c = colorValue.replace('#', '');
-                const r = parseInt(c.substring(0, 2), 16);
-                const g = parseInt(c.substring(2, 4), 16);
-                const b = parseInt(c.substring(4, 6), 16);
-                const bgColor = `rgba(${r}, ${g}, ${b}, 0.15)`;
-                return (
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      padding: '2px 10px',
-                      borderRadius: '12px',
-                      fontSize: '0.75rem',
-                      fontWeight: 500,
-                      backgroundColor: bgColor,
-                      color: colorValue,
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
+              const colorValue = column.statusColorMappings[obsValue] ?? '#888888';
+              const c = colorValue.replace('#', '');
+              const r = parseInt(c.substring(0, 2), 16);
+              const g = parseInt(c.substring(2, 4), 16);
+              const b = parseInt(c.substring(4, 6), 16);
+              const bgColor = `rgba(${r}, ${g}, ${b}, 0.15)`;
+              return (
+                <span
+                  style={{
+                    display: 'inline-block',
+                    padding: '2px 10px',
+                    borderRadius: '12px',
+                    fontSize: '0.75rem',
+                    fontWeight: 500,
+                    backgroundColor: bgColor,
+                    color: colorValue,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
                     {obsValue}
                   </span>
-                );
-              })()
+              );
+            })()
             : withUnit(obsValue, units)}
         </div>
       )}

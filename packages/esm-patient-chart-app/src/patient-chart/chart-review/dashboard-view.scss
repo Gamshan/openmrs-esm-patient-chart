@@ -12,6 +12,11 @@
   grid-auto-rows: auto;
   grid-gap: 1.3125rem;
   margin: 1.3125rem;
+  // Hide empty extension wrappers when components return null
+  // This prevents empty space in the grid when supplementary widgets have no data
+  > :has([data-extension-id='immunization-detailed-history-card']:empty) {
+    display: none;
+  }
 }
 
 // See https://zpl.io/lrlmdq0 for the Visits dashboard design
@@ -31,7 +36,7 @@
 // proper rendering when the workspace area is opened.
 @container dashboard (width <= 68.25rem) {
   .dashboard {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -43,6 +48,13 @@
   }
 }
 
+.extension {
+  // Grid items default to min-width: auto, which lets wide content (e.g. data
+  // tables) expand the item beyond its track and get clipped. min-width: 0
+  // keeps widgets contained so tables scroll within their own cards instead.
+  min-width: 0;
+}
+
 .extension:only-child {
   grid-column: 1 / -1;
 }
@@ -52,7 +64,7 @@
 }
 
 :global(.omrs-breakpoint-lt-desktop) .dashboard {
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 :global(.omrs-breakpoint-lt-tablet) .container {

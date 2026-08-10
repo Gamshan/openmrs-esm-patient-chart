@@ -1,14 +1,15 @@
 import { openmrsFetch, showSnackbar, type FetchResponse } from '@openmrs/esm-framework';
+import { vi, describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { mockCurrentVisit } from '__mocks__';
 import React from 'react';
-import { mockPatient } from 'tools';
-import DeleteVisitDialog from './delete-visit-dialog.component';
 
-const mockCloseModal = jest.fn();
-const mockOpenmrsFetch = jest.mocked(openmrsFetch);
-const mockShowSnackbar = jest.mocked(showSnackbar);
+import DeleteVisitDialog from './delete-visit-dialog.modal';
+
+const mockCloseModal = vi.fn();
+const mockOpenmrsFetch = vi.mocked(openmrsFetch);
+const mockShowSnackbar = vi.mocked(showSnackbar);
 
 describe('Delete visit', () => {
   it('voids the visit and voids its associated encounters', async () => {
@@ -21,7 +22,7 @@ describe('Delete visit', () => {
 
     mockOpenmrsFetch.mockResolvedValue(response as FetchResponse);
 
-    render(<DeleteVisitDialog visit={mockCurrentVisit} closeModal={mockCloseModal} patientUuid={mockPatient.id} />);
+    render(<DeleteVisitDialog visit={mockCurrentVisit} closeModal={mockCloseModal} />);
 
     const cancelButton = screen.getByRole('button', { name: /^cancel$/i });
     const deleteVisitButton = screen.getByRole('button', { name: /delete visit$/i });
@@ -53,7 +54,7 @@ describe('Delete visit', () => {
 
     mockOpenmrsFetch.mockRejectedValueOnce({ message: 'Internal server error', status: 500 });
 
-    render(<DeleteVisitDialog visit={mockCurrentVisit} closeModal={mockCloseModal} patientUuid={mockPatient.id} />);
+    render(<DeleteVisitDialog visit={mockCurrentVisit} closeModal={mockCloseModal} />);
 
     const cancelButton = screen.getByRole('button', { name: /^cancel$/i });
     const deleteVisitButton = screen.getByRole('button', { name: /delete visit$/i });
