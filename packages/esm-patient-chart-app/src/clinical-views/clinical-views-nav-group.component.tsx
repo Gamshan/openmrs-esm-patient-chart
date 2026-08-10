@@ -1,6 +1,5 @@
 import type React from 'react';
 import { useEffect } from 'react';
-import { attach, detach } from '@openmrs/esm-framework';
 import { useHasAnyCondition } from './hooks/useCondition';
 
 const CLINICAL_VIEW_CONDITION_UUIDS = [
@@ -17,22 +16,33 @@ interface ClinicalViewsNavGroupProps {
   patientUuid?: string;
 }
 
+function setClinicalViewsVisibility(visible: boolean) {
+  // Find all li.cds--accordion__item that contain 'Clinical Views' text
+  const allAccordionItems = document.querySelectorAll('li.cds--accordion__item');
+  allAccordionItems.forEach((el: Element) => {
+    const button = el.querySelector('button');
+    if (button?.textContent?.trim() === 'Clinical Views') {
+      (el as HTMLElement).style.display = visible ? '' : 'none';
+    }
+  });
+}
+
 const ClinicalViewsNavGroup: React.FC<ClinicalViewsNavGroupProps> = (props) => {
   const patientUuid = props.patientUuid ?? getPatientUuidFromUrl();
-  const { hasCondition, isLoading } = useHasAnyCondition(patientUuid, CLINICAL_VIEW_CONDITION_UUIDS);
+  const { hasCondition, isLoading } = useHasAnyCondition(patientUuid, CLINICAL_VIEW_CONDITION_UUIDS, {
+    refreshInterval: 10000,
+  });
 
   useEffect(() => {
     if (isLoading) return;
 
-    if (hasCondition) {
-      attach('patient-chart-dashboard-slot', 'nav-group#ClinicalViews');
-    } else {
-      detach('patient-chart-dashboard-slot', 'nav-group#ClinicalViews');
-    }
+    setClinicalViewsVisibility(hasCondition);
 
-    return () => {
-      detach('patient-chart-dashboard-slot', 'nav-group#ClinicalViews');
-    };
+    const timer = setTimeout(() => {
+      setClinicalViewsVisibility(hasCondition);
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, [hasCondition, isLoading]);
 
   return null;
