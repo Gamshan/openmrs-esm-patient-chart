@@ -537,6 +537,15 @@ function calcSuicideRisk(
   else return conceptCodes['HighRisk'];
 }
 
+const calcPatientConditions = async (patientId: string, conditionIdList) => {
+  const activeConditionList = [];
+  for (const conditionId of conditionIdList) {
+    const conditionData = await getCondition(patientId, conditionId);
+    if (conditionData && conditionData.total > 0) activeConditionList.push(conditionId);
+  }
+  return activeConditionList;
+};
+
 export {
   calcHtnGrade,
   calcBpControl,
@@ -556,4 +565,5 @@ export {
   calcSouthEastAsiaCVDRisk,
   calcSuicideRisk,
   calcDiabetesStatus,
+  calcPatientConditions,
 };
