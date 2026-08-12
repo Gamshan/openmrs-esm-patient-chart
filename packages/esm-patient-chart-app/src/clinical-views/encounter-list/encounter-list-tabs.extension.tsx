@@ -8,6 +8,9 @@ import styles from './encounter-list-tabs.scss';
 import { filter } from '../utils/helpers';
 import { type Encounter } from '../types';
 import { usePatientChartStore } from '@openmrs/esm-patient-common-lib/src';
+import { useHasAnyCondition } from '../hooks/useCondition';
+
+const CLINICAL_VIEW_CONDITION_UUIDS = ['119481AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', '117399AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'];
 
 interface EncounterListTabsComponentProps {
   patientUuid: string;
@@ -23,6 +26,8 @@ const EncounterListTabsExtension: React.FC<EncounterListTabsComponentProps> = ({
   const { visitContext } = usePatientChartStore(patientUuid);
 
   const config = useConfig();
+  const { hasCondition, isLoading: conditionLoading } = useHasAnyCondition(patientUuid, CLINICAL_VIEW_CONDITION_UUIDS);
+
   const { tabDefinitions = [] } = config;
 
   const configConcepts = {
@@ -43,6 +48,9 @@ const EncounterListTabsExtension: React.FC<EncounterListTabsComponentProps> = ({
   }, [tabsConfig]);
 
   const isDead = patient.deceasedBoolean ?? Boolean(patient.deceasedDateTime);
+
+  if (conditionLoading) return null;
+  if (!hasCondition) return null;
 
   return (
     <div className={styles.tabContainer}>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { isValidElement } from 'react';
 import {
   DataTable,
   Table,
@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@carbon/react';
+import { NumericObservation } from '@openmrs/esm-framework';
 import { type TableHeaderType, type TableRow as TableRowType } from '../types';
 import styles from './table.scss';
 
