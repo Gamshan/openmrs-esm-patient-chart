@@ -13,14 +13,16 @@ import {
   useConfig,
   type Visit,
 } from '@openmrs/esm-framework';
-import type { ExternalOverviewProps } from '@openmrs/esm-patient-common-lib';
-import { type Note, type Order, type OrderItem } from '../visit.resource';
+import type { ChartConfig } from '../../../config-schema';
+import type { Note, Order, OrderItem } from '../visit.resource';
+import { dedupeDiagnoses } from '../../dedupe-diagnoses';
+import { encounterHasJsonSchemaForm } from './encounters-table/encounters-table.resource';
 import MedicationSummary from './medications-summary.component';
 import NotesSummary from './notes-summary.component';
 import TestsSummary from './tests-summary.component';
+import VisitCompletedFormsTable from './encounters-table/visit-completed-forms-table.component';
 import VisitEncountersTable from './encounters-table/visit-encounters-table.component';
 import VisitTimeline from '../single-visit-details/visit-timeline/visit-timeline.component';
-import { type ChartConfig } from '../../../config-schema';
 import styles from './visit-summary.scss';
 
 interface VisitSummaryProps {
@@ -83,22 +85,17 @@ const VisitSummary: React.FC<VisitSummaryProps> = ({ visit, patientUuid }) => {
       }
     });
 
-    // Sort the diagnoses by rank, so that primary diagnoses come first
-    diagnoses.sort((a, b) => a.rank - b.rank);
-
     // Sort medications by dateActivated DESC (newest first) to align with backend ordering
     medications.sort((a, b) => new Date(b.order.dateActivated).getTime() - new Date(a.order.dateActivated).getTime());
 
-    return [diagnoses, notes, medications];
+    return [dedupeDiagnoses(diagnoses), notes, medications];
   }, [config.notesConceptUuids, visit?.encounters]);
 
   const encounterIds = useMemo(() => visit?.encounters?.map((e) => `Encounter/${e.uuid}`) ?? [], [visit?.encounters]);
 
-  const testsFilter = useMemo<ExternalOverviewProps['filter']>(
-    () =>
-      ([entry]) =>
-        encounterIds.includes(entry.encounter?.reference),
-    [encounterIds],
+  const hasCompletedForms = useMemo(
+    () => visit?.encounters?.some(encounterHasJsonSchemaForm) ?? false,
+    [visit?.encounters],
   );
 
   return (
@@ -135,10 +132,13 @@ const VisitSummary: React.FC<VisitSummaryProps> = ({ visit, patientUuid }) => {
           >
             {t('medications', 'Medications')}
           </Tab>
+          <Tab className={styles.tab} id="completed-forms-tab" disabled={!hasCompletedForms && config.disableEmptyTabs}>
+            {t('completedForms', 'Completed forms')}
+          </Tab>
           <Tab
             className={styles.tab}
             id="encounters-tab"
-            disabled={visit?.encounters.length <= 0 && config.disableEmptyTabs}
+            disabled={(visit?.encounters?.length ?? 0) <= 0 && config.disableEmptyTabs}
           >
             {t('encounters_title', 'Encounters')}
           </Tab>
@@ -163,6 +163,9 @@ const VisitSummary: React.FC<VisitSummaryProps> = ({ visit, patientUuid }) => {
           </TabPanel>
           <TabPanel>
             <MedicationSummary medications={medications} />
+          </TabPanel>
+          <TabPanel>
+            <VisitCompletedFormsTable visit={visit} patientUuid={patientUuid} />
           </TabPanel>
           <TabPanel>
             <VisitEncountersTable visit={visit} patientUuid={patientUuid} />

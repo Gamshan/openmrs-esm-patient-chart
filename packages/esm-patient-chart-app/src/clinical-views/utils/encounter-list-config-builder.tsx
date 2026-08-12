@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   getObsFromEncounter,
   getMultipleObsFromEncounter,
@@ -17,6 +18,7 @@ import {
 } from '../types';
 import { renderTag } from '../encounter-list/tag.component';
 import type { TFunction } from 'i18next';
+import ConditionColumnRenderer from '../encounter-list/condition-column-renderer.component';
 
 export interface FormattedColumn {
   key: string;
@@ -35,6 +37,16 @@ const getColumnValue = (
   if (column.id === 'actions') {
     return getActions(encounter, column, config);
   }
+  if (column.rendering === 'conditionField') {
+    return (
+      <ConditionColumnRenderer
+        patientUuid={encounter.patient?.uuid}
+        conditionCode={column.conditionCode}
+        field={column.field}
+      />
+    );
+  }
+
   if (column.statusColorMappings) {
     return renderTag(encounter, column.concept, column.statusColorMappings, config);
   }

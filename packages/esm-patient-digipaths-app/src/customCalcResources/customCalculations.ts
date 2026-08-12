@@ -487,6 +487,12 @@ function isOneYearAgo(date: string) {
   return todayDate - oldDate > oneYear;
 }
 
+async function calcDiabetesStatus(patientId) {
+  const conditionData = await getCondition(patientId, '119481AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
+  let isActiveDiabetes = conditionData && conditionData.total > 0 ? 1 : 0;
+  return isActiveDiabetes ? 'Yes' : 'No';
+}
+
 function calcSuicideRisk(
   gender,
   ageRisk,
@@ -531,6 +537,15 @@ function calcSuicideRisk(
   else return conceptCodes['HighRisk'];
 }
 
+const calcPatientConditions = async (patientId: string, conditionIdList) => {
+  const activeConditionList = [];
+  for (const conditionId of conditionIdList) {
+    const conditionData = await getCondition(patientId, conditionId);
+    if (conditionData && conditionData.total > 0) activeConditionList.push(conditionId);
+  }
+  return activeConditionList;
+};
+
 export {
   calcHtnGrade,
   calcBpControl,
@@ -549,4 +564,6 @@ export {
   calcSouthEastAsiaLabCVDRisk,
   calcSouthEastAsiaCVDRisk,
   calcSuicideRisk,
+  calcDiabetesStatus,
+  calcPatientConditions,
 };

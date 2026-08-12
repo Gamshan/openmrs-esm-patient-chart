@@ -2,7 +2,16 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { Button, Link, OverflowMenu, OverflowMenuItem, DataTableSkeleton, Pagination } from '@carbon/react';
-import { AddIcon, navigate, showModal, showSnackbar, useConfig, type Visit } from '@openmrs/esm-framework';
+import {
+  AddIcon,
+  navigate,
+  NumericObservation,
+  showModal,
+  showSnackbar,
+  useConfig,
+  usePatient,
+  type Visit,
+} from '@openmrs/esm-framework';
 import { EmptyState } from '@openmrs/esm-patient-common-lib';
 import { EncounterListDataTable } from './table.component';
 import { type LaunchAction, launchEncounterForm } from '../utils/helpers';
@@ -36,6 +45,8 @@ export interface EncounterListProps {
   visit: Visit;
 }
 
+const femaleOnlyColumnKeys = ['contraceptive', 'pregnancy', 'planningpregnant'];
+
 export const EncounterList: React.FC<EncounterListProps> = ({
   patientUuid,
   encounterType,
@@ -51,6 +62,39 @@ export const EncounterList: React.FC<EncounterListProps> = ({
 }) => {
   const { t } = useTranslation();
   const { requireActiveVisitForEncounterTile } = useConfig<Pick<ChartConfig, 'requireActiveVisitForEncounterTile'>>();
+
+  const { patient } = usePatient(patientUuid);
+  const isMale = patient?.gender === 'male';
+
+  const patientAge = useMemo(() => {
+    if (!patient?.birthDate) {
+      return null;
+    }
+    const birthDate = new Date(patient.birthDate);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const hasHadBirthdayThisYear =
+      today.getMonth() > birthDate.getMonth() ||
+      (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
+    if (!hasHadBirthdayThisYear) {
+      age -= 1;
+    }
+    return age;
+  }, [patient?.birthDate]);
+
+  const shouldHideReproductiveColumns = useMemo(() => {
+    if (isMale) {
+      return true;
+    }
+    return patientAge != null && patientAge > 50;
+  }, [isMale, patientAge]);
+
+  const visibleColumns = useMemo(() => {
+    if (shouldHideReproductiveColumns) {
+      return columns.filter((column) => !femaleOnlyColumnKeys.includes(column.key));
+    }
+    return columns;
+  }, [columns, shouldHideReproductiveColumns]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -152,7 +196,7 @@ export const EncounterList: React.FC<EncounterListProps> = ({
         viewEncounter: createLaunchFormAction(encounter, 'view'),
       };
 
-      columns.forEach((column) => {
+      visibleColumns.forEach((column) => {
         let val = column?.getValue(encounter);
         if (column.link) {
           val = (
@@ -168,6 +212,10 @@ export const EncounterList: React.FC<EncounterListProps> = ({
             >
               {typeof val === 'string' ? val : ''}
             </Link>
+          );
+        } else if (typeof val === 'number' && column.concept) {
+          val = (
+            <NumericObservation value={val} conceptUuid={column.concept} patientUuid={patientUuid} variant="cell" />
           );
         }
         tableRow[column.key] = val;
@@ -214,23 +262,24 @@ export const EncounterList: React.FC<EncounterListProps> = ({
   }, [
     encounters,
     createLaunchFormAction,
-    columns,
+    visibleColumns,
     defaultActions,
     formsJson,
     t,
     handleDeleteEncounter,
     visit,
     requireActiveVisitForEncounterTile,
+    patientUuid,
   ]);
 
   const headers = useMemo(() => {
-    if (columns) {
-      return columns.map((column) => {
+    if (visibleColumns) {
+      return visibleColumns.map((column) => {
         return { key: column.key, header: t(column.header) };
       });
     }
     return [];
-  }, [columns, t]);
+  }, [visibleColumns, t]);
 
   const formLauncher = useMemo(() => {
     if (formsJson) {

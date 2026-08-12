@@ -168,6 +168,9 @@ export interface ColumnDefinition {
   encounterType: string;
   hasSummary?: boolean;
   summaryConcept?: SummaryConcept;
+  rendering?: string;
+  conditionCode?: string;
+  field?: string;
 }
 
 export interface ConditionalEncounterMapping {

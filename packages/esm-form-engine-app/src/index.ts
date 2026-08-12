@@ -9,6 +9,7 @@ import {
   calcEGFR_Stage,
   calcFootCare,
   calcHtnGrade,
+  calcPatientConditions,
   calcPhq9,
   calcPhq9Grade,
   calcSouthEastAsiaCVDRisk,
@@ -79,6 +80,7 @@ export async function startupApp() {
   registerExpressionHelper('calcSouthEastAsiaLabCVDRisk', calcSouthEastAsiaLabCVDRisk);
   registerExpressionHelper('calcSouthEastAsiaCVDRisk', calcSouthEastAsiaCVDRisk);
   registerExpressionHelper('calcSuicideRisk', calcSuicideRisk);
+  registerExpressionHelper('calcPatientConditions', calcPatientConditions);
 }
 
 export const formRenderer = getAsyncLifecycle(() => import('./form-renderer/form-renderer.component'), options);
