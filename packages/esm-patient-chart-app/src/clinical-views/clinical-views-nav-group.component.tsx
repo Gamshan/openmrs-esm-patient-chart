@@ -5,6 +5,8 @@ import { useHasAnyCondition } from './hooks/useCondition';
 const CLINICAL_VIEW_CONDITION_UUIDS = [
   '119481AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', // Diabetes mellitus
   '117399AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', // Hypertension
+  '145438AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', // Chronic Kidney Disease
+  '119270AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', // Cardiovascular disease
 ];
 
 function getPatientUuidFromUrl(): string | undefined {
@@ -29,10 +31,7 @@ function setClinicalViewsVisibility(visible: boolean) {
 
 const ClinicalViewsNavGroup: React.FC<ClinicalViewsNavGroupProps> = (props) => {
   const patientUuid = props.patientUuid ?? getPatientUuidFromUrl();
-  const { hasCondition, isLoading } = useHasAnyCondition(patientUuid, CLINICAL_VIEW_CONDITION_UUIDS, {
-    refreshInterval: 10000,
-  });
-
+  const { hasCondition, isLoading } = useHasAnyCondition(patientUuid, CLINICAL_VIEW_CONDITION_UUIDS);
   useEffect(() => {
     if (isLoading) return;
 
