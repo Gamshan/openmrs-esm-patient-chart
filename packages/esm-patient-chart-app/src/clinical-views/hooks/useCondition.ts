@@ -98,26 +98,16 @@ export function useHasAnyCondition(patientUuid: string, conceptUuids: Array<stri
   installInterceptor();
   const [bundle, setBundle] = useState<FHIRConditionBundle | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<unknown>(null);
 
   useEffect(() => {
     if (!patientUuid) return;
     let cancelled = false;
 
-    openmrsFetch(`/ws/fhir2/R4/Condition?patient=${patientUuid}&clinical-status=active`)
-      .then((res: { data: FHIRConditionBundle }) => {
-        if (!cancelled) setBundle(res.data);
-      })
-      .catch((err: unknown) => {
-        if (!cancelled) setError(err);
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
-      });
-
     const unsubscribe = subscribe(patientUuid, (freshBundle) => {
-      setBundle(freshBundle);
-      setIsLoading(false);
+      if (!cancelled) {
+        setBundle(freshBundle);
+        setIsLoading(false);
+      }
     });
 
     return () => {
@@ -129,5 +119,5 @@ export function useHasAnyCondition(patientUuid: string, conceptUuids: Array<stri
   const activeCodes = activeCodesFromBundle(bundle);
   const hasCondition = activeCodes.some((code) => conceptUuids.includes(code));
 
-  return { hasCondition, isLoading, error };
+  return { hasCondition, isLoading, error: null };
 }
