@@ -81,11 +81,6 @@ export function invalidatePatientEncounters(mutate: KeyedMutator<unknown>, patie
   });
 }
 
-export function invalidatePatientConditions(mutate: KeyedMutator<unknown>, patientUuid: string): void {
-  mutate((key) => {
-    return typeof key === 'string' && key.includes(`/Condition?patient=${patientUuid}`);
-  });
-}
 /**
  * Invalidates only the current (active) visit cache for a specific patient.
  *

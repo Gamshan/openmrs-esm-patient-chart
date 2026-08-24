@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 import { openmrsFetch } from '@openmrs/esm-framework';
 
 interface FHIRCoding {
@@ -70,14 +70,46 @@ function parseConditionListUrl(rawUrl: string): { patientUuid: string } | null {
   }
 }
 
-let interceptorInstalled = false;
+function isEncounterSaveUrl(rawUrl: string, method: string): boolean {
+  if (method !== 'POST' && method !== 'PUT') return false;
+  try {
+    const u = new URL(rawUrl, window.location.origin);
+    return /\/encounter(\/|$|\?)/.test(u.pathname);
+  } catch {
+    return false;
+  }
+}
 
-function installInterceptor() {
+function isFormEngineObs(o: any): boolean {
+  return typeof o?.formFieldNamespace === 'string' && o.formFieldNamespace.length > 0;
+}
+
+function obsContainsClinicalViewCondition(obsList: any[], conceptUuids: string[]): boolean {
+  return (obsList ?? []).some((o) => {
+    const val = typeof o?.value === 'string' ? o.value : o?.value?.uuid;
+    if (isFormEngineObs(o) && val && conceptUuids.includes(val)) return true;
+    return Array.isArray(o?.groupMembers) ? obsContainsClinicalViewCondition(o.groupMembers, conceptUuids) : false;
+  });
+}
+
+let sharedSwrMutate: ReturnType<typeof useSWRConfig>['mutate'] | null = null;
+
+function refreshSharedConditionsCache(patientUuid: string) {
+  sharedSwrMutate?.((key) => typeof key === 'string' && key.includes(`/Condition?patient=${patientUuid}`));
+}
+
+let interceptorInstalled = false;
+const watchedConceptUuidSet = new Set<string>();
+
+function installInterceptor(watchedConceptUuids: string[] = []) {
+  watchedConceptUuids.forEach((uuid) => watchedConceptUuidSet.add(uuid));
+
   if (interceptorInstalled) return;
   interceptorInstalled = true;
   const originalFetch = window.fetch;
   window.fetch = async function (...args: Parameters<typeof fetch>) {
     const input = args[0];
+    const method = (args[1]?.method ?? 'GET').toUpperCase();
     const url = typeof input === 'string' ? input : (input as Request).url ?? '';
     const response = await originalFetch.apply(this, args);
 
@@ -90,12 +122,55 @@ function installInterceptor() {
         .catch(() => {});
     }
 
+    if (isEncounterSaveUrl(url, method) && response.ok) {
+      try {
+        const rawText = await response.text();
+        let body: any = null;
+        try {
+          body = JSON.parse(rawText);
+        } catch {
+          // not JSON, ignore
+        }
+
+        if (body) {
+          const patientUuid = typeof body?.patient === 'string' ? body.patient : body?.patient?.uuid;
+
+          if (patientUuid) {
+            const matched = obsContainsClinicalViewCondition(body?.obs, Array.from(watchedConceptUuidSet));
+
+            if (matched) {
+              openmrsFetch(`/ws/fhir2/R4/Condition?patient=${patientUuid}`)
+                .then(({ data }) => {
+                  notify(patientUuid, data);
+                })
+                .catch(() => {});
+              refreshSharedConditionsCache(patientUuid);
+            }
+          }
+        }
+
+        return new Response(rawText, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: response.headers,
+        });
+      } catch (err) {
+        return response;
+      }
+    }
+
     return response;
   };
 }
 
 export function useHasAnyCondition(patientUuid: string, conceptUuids: Array<string>) {
-  installInterceptor();
+  installInterceptor(conceptUuids);
+
+  const { mutate: swrMutate } = useSWRConfig();
+  useEffect(() => {
+    sharedSwrMutate = swrMutate;
+  }, [swrMutate]);
+
   const [bundle, setBundle] = useState<FHIRConditionBundle | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
