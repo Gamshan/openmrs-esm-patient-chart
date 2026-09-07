@@ -10,3 +10,14 @@ export async function getCondition(patientUuid: string, code: string) {
 
   return data;
 }
+
+export async function getObs(patientUuid: string, code: string) {
+  const url =
+    `${fhirBaseUrl}/Observation?patient=${patientUuid}` + `&code=5085AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA` + `&_sort=-date`;
+
+  const response = await openmrsFetch(url);
+
+  const data = await response.json();
+
+  return data;
+}

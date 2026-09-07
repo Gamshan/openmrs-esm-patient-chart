@@ -3,6 +3,7 @@ import { registerExpressionHelper } from '@openmrs/esm-form-engine-lib';
 import { configSchema, type ConfigObject } from './config-schema';
 import {
   calcBpControl,
+  calcBpTarget,
   calcCDK_Risk,
   calcCVDRiskCategory,
   calcEGFR,
@@ -81,6 +82,7 @@ export async function startupApp() {
   registerExpressionHelper('calcSouthEastAsiaCVDRisk', calcSouthEastAsiaCVDRisk);
   registerExpressionHelper('calcSuicideRisk', calcSuicideRisk);
   registerExpressionHelper('calcPatientConditions', calcPatientConditions);
+  registerExpressionHelper('calcBpTarget', calcBpTarget);
 }
 
 export const formRenderer = getAsyncLifecycle(() => import('./form-renderer/form-renderer.component'), options);

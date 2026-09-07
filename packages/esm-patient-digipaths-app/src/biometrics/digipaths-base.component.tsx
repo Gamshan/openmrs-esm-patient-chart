@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ContentSwitcher, DataTableSkeleton, IconSwitch, InlineLoading } from '@carbon/react';
-import { formatDatetime, parseDate, useConfig, useLayoutType } from '@openmrs/esm-framework';
+import { formatDatetime, parseDate, useConfig, useLayoutType, fhirBaseUrl, openmrsFetch } from '@openmrs/esm-framework';
 import { CardHeader, EmptyState, ErrorState } from '@openmrs/esm-patient-common-lib';
 
 import { type ConfigObject } from '../config-schema';
@@ -10,6 +10,8 @@ import type { DigipathsTableHeader, DigipathsTableRow } from './types';
 import styles from './digipaths-base.scss';
 import { useDigipathData } from '../common/data.resource';
 import { marked } from 'marked';
+import useSWR from 'swr';
+
 interface DigiPathBaseProps {
   pageSize: number;
   pageUrl: string;
