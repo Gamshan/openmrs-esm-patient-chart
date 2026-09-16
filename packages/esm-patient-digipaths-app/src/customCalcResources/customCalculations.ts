@@ -32,27 +32,22 @@ async function calcBpControl(age, systolic, diastolic, patientId) {
     case conceptCodes['SBPlt130mmHgAndDBPlt80mmHg']:
       isControlSBP = sbp < 130;
       isControlDBP = dbp < 80;
-      console.log('SBPlt130mmHgAndDBPlt80mmHg 11111');
       break;
     case conceptCodes['SBPlt140mmHgAndDBPlt80mmHg']:
       isControlSBP = sbp < 140;
       isControlDBP = dbp < 80;
-      console.log('SBPlt140mmHgAndDBPlt80mmHg 222222');
       break;
     case conceptCodes['SBPlte130mmHgAndDBPlt80mmHg']:
       isControlSBP = sbp <= 130;
       isControlDBP = dbp < 80;
-      console.log('SBPlte130mmHgAndDBPlt80mmHg 3333333');
       break;
     case conceptCodes['SBPlte140mmHgAndDBPlt80mmHg']:
       isControlSBP = sbp <= 140;
       isControlDBP = dbp < 80;
-      console.log('SBPlte140mmHgAndDBPlt80mmHg 44444');
       break;
     case conceptCodes['SBP130mmHgAndDBP80mmHg']:
       isControlSBP = sbp === 130;
       isControlDBP = dbp === 80;
-      console.log('SBPlte140mmHgAndDBPlt80mmHg 555555');
       break;
     default:
       break;
